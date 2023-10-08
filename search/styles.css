@@ -1,0 +1,19 @@
+
+.input {
+    width: 250px;
+    border-radius: 20px;
+    border-style: solid;
+    border-color: grey;
+}
+
+input:focus-visible {
+    outline: 0px;
+}
+
+input:hover {
+    border-color: black;
+}
+
+.button {
+    margin: auto;
+}
