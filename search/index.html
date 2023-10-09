@@ -19,28 +19,44 @@
 
         <nav class="border navbar navbar-expand-md bg-body-tertiary navbar-light vw-100">
             <div class="container-fluid">
-                <!-- <a class="navbar-brand" href="/">
-                    <img src="/static/logo.png" alt="Logo" width="50" height="50" />
-                    <span class="mx-3">My Articles</span>
-                </a> -->
+            
                 <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation"
                     class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse fs-5 text-white" id="navbar">
                     <ul class="navbar-nav ">
-                        <li class="nav-item me-5"><a class="nav-link active" href="#">Google Search</a></li>
-                        <li class="nav-item me-5"><a class="nav-link" href="/image.html">Google Image Search</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/advanced.html">Google Advanced Search</a></li>
-                    </ul>
-                    
+                        <li class="nav-item me-5">
+                            <a class="nav-link active" href="#">
+                                <span class="d-inline-flex">
+                                    <span class="text-primary">G</span>
+                                    <span class="text-danger">o</span>
+                                    <span class="text-warning">o</span>
+                                    <span class="text-primary">g</span>
+                                    <span class="text-success">l</span>
+                                    <span class="text-danger">e</span>
+                                    <span class="ps-2">Search</span>
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item me-5">
+                            <a class="nav-link" href="./image.html">
+                                Image Search
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="./advanced.html">
+                                Advanced Search
+                            </a>
+                        </li>
+                    </ul>   
                 </div>
             </div>
         </nav>
 
         <form class="m-4 d-flex flex-column" action="https://google.com/search">
-            <input class="m-4 ps-3 input" type="text" name="q">
-            <input class="button btn btn-secondary" type="submit" value="Google Search">
+            <input class="m-5 ps-3 input" type="text" name="q" placeholder="Search Google or type a URL">
+            <input class="button btn btn-primary" type="submit" value="Google Search">
         </form>
     </body>
 </html>
