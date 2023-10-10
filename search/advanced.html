@@ -14,10 +14,10 @@
     <link href="styles.css" rel="stylesheet">
     <link href="https://www.google.com/favicon.ico" rel="icon">
 
-    <title>Image</title>
+    <title>Advanced</title>
 </head>
 
-<body class="vh-100 d-flex flex-column align-items-center">
+<body class="vh-100 d-flex flex-column">
 
     <nav class="border navbar navbar-expand-md bg-body-tertiary navbar-light vw-100">
         <div class="container-fluid">
@@ -47,21 +47,24 @@
         </div>
     </nav>
 
-    <form class="m-4 d-flex flex-column" action="https://google.com/search">
-        <input class="m-5 ps-3 input" type="text" name="q">
-        <input class="button btn btn-primary" type="submit" value="Google Images">
-        <div id="tophf">
-            <input name="sca_esv" value="571840155" type="hidden">
-            <input name="hl" value="en" type="hidden">
-            <input name="authuser" value="0" type="hidden">
-            <input name="tbm" value="isch" type="hidden">
-            <input name="sxsrf" value="AM9HkKmMWz58Uk7WmWkQFmHqQebT-z0XkQ:1696858137125" type="hidden">
-            <input name="source" type="hidden" value="hp">
-            <input name="biw" type="hidden" value="813">
-            <input name="bih" type="hidden" value="980">
-            <input value="GQAkZYmTBaypkdUPodngiAM" name="ei" type="hidden">
-            <input value="AO6bgOgAAAAAZSQOKfcg51PXdssEUk9z7nD7oJFt9x8z" name="iflsig" type="hidden">
+    <form class="d-flex flex-column" action="https://google.com/search">
+        <div class="d-flex flex-column m-3">
+            <div class="d-flex align-items-center m-3">
+                <span class="span-advanced">all these words:</span> <input class="ps-3 input" type="text" name="as_q">
+            </div>
+            <div class="d-flex align-items-center m-3">
+                <span class="span-advanced">this exact word or phrase:</span> <input class="ps-3 input" type="text" name="as_epq">
+            </div>
+            <div class="d-flex align-items-center m-3">
+                <span class="span-advanced">any of these words:</span> <input class="ps-3 input" type="text" name="as_oq">
+            </div>
+            <div class="d-flex align-items-center m-3">
+                <span class="span-advanced">none of these words:</span> <input class="ps-3 input" type="text" name="as_eq">
+            </div>    
         </div>
+    
+        <input class="button btn btn-primary" type="submit" value="Advanced Search">
+        
     </form>
 </body>
 

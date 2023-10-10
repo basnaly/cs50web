@@ -21,3 +21,7 @@ input:hover {
 #tophf {
     visibility: hidden;
 }
+
+.span-advanced {
+    width: 200px;
+}
