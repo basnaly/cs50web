@@ -10,8 +10,9 @@
 
     <ul>
         {% for entry in entries %}
-            <li>
-                <a href="/wiki/{{ entry }}"/>{{ entry }}</a>
+            <li class="mb-3">
+                <a href="/wiki/{{ entry }}" />{{ entry }}</a>
+                <a href="/wiki/edit/{{ entry }}" type="button" class="btn btn-outline-dark btn-sm my-hidden ml-2">Edit</a>
             </li>
         {% endfor %}
     </ul>

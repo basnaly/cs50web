@@ -36,3 +36,11 @@ textarea {
 .sidebar h2 {
     margin-top: 5px;
 }
+
+li > .my-hidden {
+    visibility: hidden;
+}
+
+li:hover > .my-hidden {
+    visibility: visible;
+}

@@ -2,12 +2,17 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django import forms
 
 import random
 from . import util
 
 import markdown2
 
+
+class NewWikiForm(forms.Form):
+    title = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Title', 'class': 'form-control mb-3'}), label='')
+    content = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Content', 'class': 'form-control'}), label='')
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -25,7 +30,6 @@ def title(request, name):
 
 def search(request):
     entries = util.list_entries()
-    
     list_entries = []
     query = request.GET["q"]
     for entry in entries:
@@ -42,6 +46,29 @@ def search(request):
 def random_search(request):
     entries = util.list_entries()
     random_entrie = random.choice(entries)
-    print(random_entrie)
-    random_title = util.get_entry(random_entrie)
     return HttpResponseRedirect(random_entrie)
+
+def add(request):
+    if request.method == "POST":
+        form = NewWikiForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            content = form.cleaned_data["content"]
+            title_md = util.get_entry(title)
+            if title_md:
+                return render(request, "encyclopedia/error.html", {
+                    "error": f"The entry '{ title }' already exists"
+                })
+            util.save_entry(title, content)
+            request.session["entries"] += [title]
+            return HttpResponseRedirect(f"/wiki/{title}")
+        else:
+            return render(request, "encyclopedia/add.html", {
+                "form": form
+            })
+    else:
+        return render(request, "encyclopedia/add.html", {
+                "form":  NewWikiForm
+            })
+        
+        
