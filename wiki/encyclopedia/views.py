@@ -13,6 +13,9 @@ import markdown2
 class NewWikiForm(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Title', 'class': 'form-control mb-3'}), label='')
     content = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Content', 'class': 'form-control'}), label='')
+    
+class EditWikiForm(forms.Form):
+    content = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Content', 'class': 'form-control'}), label='')
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -36,8 +39,13 @@ def search(request):
         if query == entry.lower():
             return HttpResponseRedirect(query)
         elif query in entry.lower():
-            list_entries.append(entry)
-            
+            list_entries.append(entry)  
+                 
+    if len(list_entries) == 0:
+        return render(request, "encyclopedia/error.html", {
+            "error": f"For query '{query}' no results"
+        })    
+                 
     return render(request, "encyclopedia/index.html", {
         "entries": list_entries,
         "search_title": f"Found Pages for query: '{query}'",
@@ -60,7 +68,6 @@ def add(request):
                     "error": f"The entry '{ title }' already exists"
                 })
             util.save_entry(title, content)
-            request.session["entries"] += [title]
             return HttpResponseRedirect(f"/wiki/{title}")
         else:
             return render(request, "encyclopedia/add.html", {
@@ -68,7 +75,27 @@ def add(request):
             })
     else:
         return render(request, "encyclopedia/add.html", {
-                "form":  NewWikiForm
+                "form": NewWikiForm
             })
         
+def edit(request, name):
+    if request.method == "GET":       
+        title = name
+        content = util.get_entry(title)
+        form = EditWikiForm({"content": content})
+        return render(request, "encyclopedia/edit.html", {
+                "form": form,
+                "title": title,
+                "url": f"/wiki/edit/{title}",
+            })
+    else:
+        form = EditWikiForm(request.POST)
+        if form.is_valid():
+            content = form.cleaned_data["content"]
+            util.save_entry(name, content)
+            return HttpResponseRedirect(f"/wiki/{name}")
+        else:
+            return render(request, "encyclopedia/edit.html", {
+                "form": form
+            })
         
