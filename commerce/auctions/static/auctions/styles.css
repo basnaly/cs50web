@@ -1,3 +1,7 @@
 body {
     padding: 10px;
 }
+
+.title {
+    width: 8rem;
+}

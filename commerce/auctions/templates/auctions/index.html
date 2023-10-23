@@ -1,7 +1,19 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    <h2>Active Listings:</h2>
+    {% for listing in listings %}
 
-    TODO
+        <div class="d-flex">
+            <img src="{{ listing.image }}" alt="{{ listing.title }}" width="400">
+            <div class="d-flex flex-column m-2">
+                <div class="fs-4 fw-bold m-2">{{ listing.title }}</div>
+                <div class="fs-5 m-2">Descripion: {{ listing.description }}</div>
+                <div class="m-2">Category: {{ listing.category }}</div>
+                <div class="fs-5 fw-bold m-2">Price $: {{ listing.price }}</div>
+                <div class="text-body-tertiary m-2">Created: {{ listing.created }}</div>
+            </div>
+        </div>
+
+    {% endfor %}
 {% endblock %}

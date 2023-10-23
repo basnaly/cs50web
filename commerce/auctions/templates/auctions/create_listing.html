@@ -1,0 +1,42 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    {% if user.is_authenticated %}
+
+        <h3 class="mb-5 text-center">Create new listing:</h3>
+
+        <form action="{% url 'create_listing' %}" method="post" class="container d-flex flex-column align-items-center">
+            {% csrf_token %}
+
+            <div class="input-group mb-3">
+                <span class="input-group-text title" id="inputGroup-sizing-default">Title</span>
+                <input autofocus type="text" name="title" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text title">Description</span>
+                <textarea type="text" name="description" class="form-control" aria-label="With textarea"></textarea>
+            </div>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text title" id="inputGroup-sizing-default">Category</span>
+                <input autofocus type="text" name="category" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text title" id="inputGroup-sizing-default">Price</span>
+                <input autofocus type="number" name="price" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text title" id="inputGroup-sizing-default">Image</span>
+                <input autofocus type="text" name="image" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+
+            <button class="btn btn-dark mt-3" type="submit" value="Submit">Submit</button>
+        </form>
+
+    {% endif %}
+
+{% endblock %}
