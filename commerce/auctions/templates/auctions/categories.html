@@ -4,7 +4,7 @@
     {% for category in categories %}
  
         <div class="text-primary fs-5 m-2">
-            <a href={{ category.category }} class="nav-link">{{ category.category }}</a>
+            <a href={% url 'category_items' category.category %} class="nav-link">{{ category.category }}</a>
         </div>
   
     {% endfor %}

@@ -1,8 +1,6 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings:</h2>
-    {% for listing in listings %}
 
         <div class="d-flex">
             <img src="{{ listing.image }}" alt="{{ listing.title }}" style="min-width:400px; max-width:0;">
@@ -16,5 +14,5 @@
             </div>
         </div>
 
-    {% endfor %}
+
 {% endblock %}

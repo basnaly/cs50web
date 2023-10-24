@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -93,7 +93,27 @@ def create_listing(request):
 
 def categories(request):
     categories = Listing.objects.values("category")
-    print(categories)
     return render(request, "auctions/categories.html", {
         "categories": categories
+    })
+ 
+    
+def category_items(request, name):
+    categories = Listing.objects.values("category")
+    category_items = Listing.objects.filter(category=name)
+    return render(request, "auctions/category_items.html", { 
+        "categories": categories,
+        "current_category": name,
+        "category_items": category_items
+    })
+    
+
+def listing(request, name):
+    try:
+        listing = Listing.objects.get(id=name)
+        print(listing)
+    except Listing.DoesNotExist:
+        raise Http404("Listing not found.")
+    return render(request, "auctions/listing.html", {
+        "listing": listing
     })
