@@ -1,10 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing
+from .models import User, Listing, Watchitem
 
 
 def index(request):
@@ -71,8 +71,7 @@ def create_listing(request):
         description = request.POST["description"]
         category = request.POST["category"]
         price = request.POST["price"]
-        image = request.POST["image"]
-       
+        image = request.POST["image"] 
         try:
             current_listing = Listing.objects.create(
                 title = title,
@@ -110,10 +109,42 @@ def category_items(request, name):
 
 def listing(request, name):
     try:
+        user = User.objects.get(id=request.user.id)
         listing = Listing.objects.get(id=name)
-        print(listing)
+        watchlist = Watchitem.objects.filter(listing=listing, user=user)
+        print(len(user.watchlist.all()))
     except Listing.DoesNotExist:
         raise Http404("Listing not found.")
     return render(request, "auctions/listing.html", {
-        "listing": listing
+        "listing": listing,
+        "watchlist": watchlist
+    })
+    
+    
+def update_watchlist(request, name):
+    listing = Listing.objects.get(id=name)
+    user = User.objects.get(id=request.user.id)
+    print(request.method)
+    if request.method == "POST":
+        watchlist = Watchitem.objects.create(listing=listing, user=user)    
+    elif request.method == "GET":
+        watchlist = Watchitem.objects.filter(listing=listing, user=user).delete()
+    return HttpResponseRedirect(reverse("listing", args=(name,)))
+  
+    
+def watchlist(request, name):
+    try:
+        watchlist = Watchitem.objects.all(listing=name)
+    except Watchitem.DoesNotExist:
+        raise Http404("Watchlist not found.")
+    return render(request, "auctions/listing.html", {
+        "watchlist": watchlist
+    })
+    
+    
+def watchitems_count(request):
+    user = User.objects.get(id=request.user.id)
+    watchitems_count = len(user.watchlist.all())
+    return JsonResponse({
+        "watchitems_count": watchitems_count
     })
