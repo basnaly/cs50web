@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonRespons
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing, Watchitem
+from .models import User, Listing, Watchitem, Bid
 
 
 def index(request):
@@ -109,15 +109,23 @@ def category_items(request, name):
 
 def listing(request, name):
     try:
+        print(request.GET)
         user = User.objects.get(id=request.user.id)
         listing = Listing.objects.get(id=name)
         watchlist = Watchitem.objects.filter(listing=listing, user=user)
-        print(len(user.watchlist.all()))
+        last_bid = None
+        bids = list(listing.bids.all())
+        bids_count = len(bids)
+        if bids_count > 0:
+            last_bid = bids[-1]
+
     except Listing.DoesNotExist:
         raise Http404("Listing not found.")
     return render(request, "auctions/listing.html", {
         "listing": listing,
-        "watchlist": watchlist
+        "watchlist": watchlist,
+        "bids_count": bids_count,
+        "last_bid": last_bid
     })
     
     
@@ -132,12 +140,13 @@ def update_watchlist(request, name):
     return HttpResponseRedirect(reverse("listing", args=(name,)))
   
     
-def watchlist(request, name):
+def watchlist(request):
     try:
-        watchlist = Watchitem.objects.all(listing=name)
+        user = User.objects.get(id=request.user.id)
+        watchlist = user.watchlist.all() 
     except Watchitem.DoesNotExist:
         raise Http404("Watchlist not found.")
-    return render(request, "auctions/listing.html", {
+    return render(request, "auctions/watchlist.html", {
         "watchlist": watchlist
     })
     
@@ -148,3 +157,29 @@ def watchitems_count(request):
     return JsonResponse({
         "watchitems_count": watchitems_count
     })
+    
+    
+def bid(request, name):
+    if request.method == "POST":
+        bid = request.POST["bid"] # bid from input
+        user = User.objects.get(id=request.user.id) 
+        listing = Listing.objects.get(id=name)
+        bids = list(listing.bids.all()) # bids from related_name
+        if not bids:            
+            if int(bid) < listing.price:
+                return HttpResponseRedirect(reverse("listing", args=(name, )))
+        else:
+            last_bid = bids[-1].bid
+            if int(bid) <= last_bid:
+                return HttpResponseRedirect(reverse("listing", args=(name, )))
+        try:
+            current_bid = Bid.objects.create(
+                bid = bid,
+                user = user,
+                listing = listing,
+            )
+            current_bid.save()
+        except Bid.DoesNotExist:
+            raise Http404("Bid not found.")
+        return HttpResponseRedirect(reverse("listing", args=(name,)))
+        

@@ -25,3 +25,15 @@ class Watchitem(models.Model):
     
     def __str__(self): 
         return f"{self.user} {self.listing}"
+    
+    
+class Bid(models.Model):
+    bid = models.IntegerField()
+    placed = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids")
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="bids")
+    
+    def __str__(self):
+        return f"{self.bid} {self.placed} {self.user} {self.listing}"
+    
+    
