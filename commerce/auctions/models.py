@@ -37,3 +37,11 @@ class Bid(models.Model):
         return f"{self.bid} {self.placed} {self.user} {self.listing}"
     
     
+class Comments(models.Model):
+    comment = models.CharField(max_length=1028)
+    created = models.DateField(auto_now_add=True) 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="comments")
+    
+    def __str__(self):
+        return f"{self.comment} {self.created} {self.user} {self.listing}"

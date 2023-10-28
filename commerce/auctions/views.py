@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonRespons
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing, Watchitem, Bid
+from .models import User, Listing, Watchitem, Bid, Comments
 
 
 def index(request):
@@ -118,14 +118,15 @@ def listing(request, name):
         bids_count = len(bids)
         if bids_count > 0:
             last_bid = bids[-1]
-
+        comments = list(listing.comments.all())
     except Listing.DoesNotExist:
         raise Http404("Listing not found.")
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "watchlist": watchlist,
         "bids_count": bids_count,
-        "last_bid": last_bid
+        "last_bid": last_bid,
+        "comments": comments,
     })
     
     
@@ -183,3 +184,20 @@ def bid(request, name):
             raise Http404("Bid not found.")
         return HttpResponseRedirect(reverse("listing", args=(name,)))
         
+
+def comments(request, name):
+    if request.method == "POST":
+        comment = request.POST["comment"]
+        user = User.objects.get(id=request.user.id)
+        listing = Listing.objects.get(id=name)
+        comments = list(listing.comments.all())
+        try:
+            current_comment = Comments.objects.create(
+                comment = comment,
+                user = user,
+                listing = listing
+            )
+            current_comment.save()
+        except Comments.DoesNotExist:
+            raise Http404("Comments not found.")
+        return HttpResponseRedirect(reverse("listing", args=(name,)))

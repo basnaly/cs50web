@@ -18,4 +18,6 @@ urlpatterns = [
     path("watchitems_count", views.watchitems_count, name="watchitems_count"),
     
     path("bid/<str:name>", views.bid, name="bid"),
+    
+    path("comments/<str:name>", views.comments, name="comments"),
 ]
