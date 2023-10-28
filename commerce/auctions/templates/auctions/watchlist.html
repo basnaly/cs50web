@@ -2,7 +2,7 @@
 
 {% block body %}
     {% for watchitem in watchlist %}
-        <div class="card shadow container my-4">
+        <div class="card shadow container my-4 {% if not watchitem.listing.is_active %}bg-secondary-subtle{% endif %}">
             <div class="card-body d-flex">
                 <img src="{{ watchitem.listing.image }}" alt="{{ watchitem.listing.title }}" style="min-width:400px; max-width:0;">
                 <div class="d-flex flex-column m-2">

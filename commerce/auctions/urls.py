@@ -20,4 +20,7 @@ urlpatterns = [
     path("bid/<str:name>", views.bid, name="bid"),
     
     path("comments/<str:name>", views.comments, name="comments"),
+    
+    path("deactivate/<str:name>", views.deactivate, name="deactivate"),
+    path("activate/<str:name>", views.activate, name="activate"),
 ]

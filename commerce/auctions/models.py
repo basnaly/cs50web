@@ -14,9 +14,10 @@ class Listing(models.Model):
     image = models.ImageField()
     created = models.DateField(auto_now_add=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
+    is_active = models.BooleanField(default=True)
     
     def __str__(self): 
-        return f"{self.title} {self.description} {self.category} {self.price} {self.image} {self.created}" 
+        return f"{self.title} {self.description} {self.category} {self.price} {self.image} {self.created} {self.is_active}" 
 
 
 class Watchitem(models.Model):

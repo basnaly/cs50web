@@ -9,7 +9,7 @@ from .models import User, Listing, Watchitem, Bid, Comments
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.all()
+        "listings": Listing.objects.filter(is_active=True)
     })
 
 
@@ -99,11 +99,11 @@ def categories(request):
     
 def category_items(request, name):
     categories = Listing.objects.values("category")
-    category_items = Listing.objects.filter(category=name)
+    category_items = Listing.objects.filter(category=name, is_active=True)
     return render(request, "auctions/category_items.html", { 
         "categories": categories,
         "current_category": name,
-        "category_items": category_items
+        "category_items": category_items,
     })
     
 
@@ -148,7 +148,7 @@ def watchlist(request):
     except Watchitem.DoesNotExist:
         raise Http404("Watchlist not found.")
     return render(request, "auctions/watchlist.html", {
-        "watchlist": watchlist
+        "watchlist": watchlist,
     })
     
     
@@ -201,3 +201,20 @@ def comments(request, name):
         except Comments.DoesNotExist:
             raise Http404("Comments not found.")
         return HttpResponseRedirect(reverse("listing", args=(name,)))
+    
+    
+def deactivate(request, name):
+    if request.method == "POST":
+        listing = Listing.objects.get(id=name)
+        listing.is_active=False
+        listing.save()
+        return HttpResponseRedirect(reverse("listing", args=(name,)))
+    
+    
+def activate(request, name):
+    if request.method == "POST":
+        listing = Listing.objects.get(id=name)
+        listing.is_active=True
+        listing.save()
+        return HttpResponseRedirect(reverse("listing", args=(name,)))
+        

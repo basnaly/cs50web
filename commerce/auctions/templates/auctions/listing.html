@@ -1,9 +1,26 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <div class="card shadow container">
-        <div class="card-body d-flex align-items-start">
-            <img src="{{ listing.image }}" alt="{{ listing.title }}" style="min-width:400px; max-width:0;">
+    <div class="card shadow container {% if not listing.is_active %}bg-secondary-subtle{% endif %}">
+        <div class="card-body d-flex">
+            <div  class="d-flex flex-column">
+                <img src="{{ listing.image }}" alt="{{ listing.title }}" style="min-width:400px; max-width:0;">
+                {% if user.is_authenticated %}
+                    {% if user.id == listing.owner.id %}
+                        {% if listing.is_active %}
+                            <form action="{% url 'deactivate' listing.id %}" method="post" class="d-flex flex-column align-items-center">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-dark mt-3">Deactivate</button>
+                            </form>
+                        {% else %}
+                            <form action="{% url 'activate' listing.id %}" method="post" class="d-flex flex-column align-items-center">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-dark mt-3">Activate</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
             <div class="d-flex flex-column m-2 flex-grow-1">
                 <a href={% url 'listing' listing.id %} class="fs-4 fw-bold m-2 text-center">{{ listing.title }}</a>
                 <div class="d-flex align-items-start">
@@ -20,7 +37,11 @@
                                 <form action="{% url 'update_watchlist' listing.id %}" method="get" class="d-flex align-items-center">
                                     {% csrf_token %}
                                     <span class="badge bg-secondary fs-5 py-2 m-2">Watchlist</span>
-                                    <button type="submit" class="btn btn-outline-dark">Remove</button>
+                                    {% if listing.is_active %}
+                                        <button type="submit" class="btn btn-outline-dark">Remove</button>
+                                    {% else %}
+                                        <div></div>
+                                    {% endif%}
                                 </form>
                             {% endif %}
                         {% endif %}
@@ -51,16 +72,20 @@
                                 </div>
                             {% endif %}
                             
-                            <form action="{% url 'bid' listing.id %}" method="post" class="d-flex flex-column align-items-start">
-                                {% csrf_token %}
-                                <div class="form-group mb-3">
-                                    <input autofocus class="form-control m-2" type="number" name="bid" placeholder="Bid"
-                                        min="{% if last_bid %}{{ last_bid.bid|add:1 }}{% else %}{{ listing.price }}{% endif %}"/>
-                                </div>
-                                <button type="submit" class="btn btn-outline-dark ms-2" disabled="{% if last_bid.user.id == user.id %}true{% endif %}" >
-                                    Place Bid
-                                </button>
-                            </form>
+                            {% if listing.is_active %}
+                                <form action="{% url 'bid' listing.id %}" method="post" class="d-flex flex-column align-items-start">
+                                    {% csrf_token %}
+                                    <div class="form-group mb-3">
+                                        <input autofocus class="form-control m-2" type="number" name="bid" placeholder="Bid"
+                                            min="{% if last_bid %}{{ last_bid.bid|add:1 }}{% else %}{{ listing.price }}{% endif %}"/>
+                                    </div>
+                                    <button type="submit" class="btn btn-outline-dark ms-2" disabled="{% if last_bid.user.id == user.id %}true{% endif %}" >
+                                        Place Bid
+                                    </button>
+                                </form>
+                            {% else %}
+                                <div></div>
+                            {% endif %} 
                         </div>
                     {% endif %}
                 </div>
@@ -79,17 +104,32 @@
                     <hr>
 
                     {% if user.is_authenticated %}
-                        <div class="d-flex m-2">
-                            <div>Leave your comment</div>
-                            <form action="{% url 'comments' listing.id %}" method="post" class="container d-flex align-items-center">
-                                {% csrf_token %}
-                                <div class="form-group mt-2 me-2">
-                                    <input class="form-control" type="text" name="comment" placeholder="Comment" style="min-width: 25rem;">
-                                </div>
-                                <input class="btn btn-outline-dark mt-2 ms-3" type="submit" value="Save">
-                            </form>
-                        </div>
+                        {% if listing.is_active %}
+                            <div class="d-flex m-2">
+                                <div>Leave your comment</div>
+                                <form action="{% url 'comments' listing.id %}" method="post" class="container d-flex align-items-center">
+                                    {% csrf_token %}
+                                    <div class="form-group mt-2 me-2">
+                                        <input class="form-control" type="text" name="comment" placeholder="Comment" style="min-width: 25rem;">
+                                    </div>
+                                    <input class="btn btn-outline-dark mt-2 ms-3" type="submit" value="Save">
+                                </form>
+                            </div>
+                        {% else %}
+                            <div></div>
+                        {% endif %}
                     {% endif %}
+
+                    {% if listing.is_active %}
+                        <div></div>
+                    {% else %}
+                        <div class="fs-5 m-2 text-center">This listing was desactivated by: 
+                            <span class="fs-5 fw-bold">{{ listing.owner }}</span>    
+                        </div>
+                        <div class="fs-5 text-center">The winner is: 
+                            <span class="fs-5 fw-bold">{{ last_bid.user.username }}</span>
+                        </div>
+                    {% endif %}  
 
                 </div>
         
