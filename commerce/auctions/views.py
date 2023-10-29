@@ -91,14 +91,14 @@ def create_listing(request):
     
 
 def categories(request):
-    categories = Listing.objects.values("category")
+    categories = Listing.objects.values("category").distinct()
     return render(request, "auctions/categories.html", {
         "categories": categories
     })
  
     
 def category_items(request, name):
-    categories = Listing.objects.values("category")
+    categories = Listing.objects.values("category").distinct()
     category_items = Listing.objects.filter(category=name, is_active=True)
     return render(request, "auctions/category_items.html", { 
         "categories": categories,

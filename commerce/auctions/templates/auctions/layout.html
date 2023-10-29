@@ -22,7 +22,7 @@
             });
         </script>
     </head>
-    <body>
+    <body class="d-flex flex-column vh-100 overflow-auto">
         <h1>Auctions</h1>
         <div>
             {% if user.is_authenticated %}
@@ -60,7 +60,9 @@
             {% endif %}
         </ul>
         <hr>
+        <div class="d-flex flex-column overflow-auto">
         {% block body %}
+            </div>
         {% endblock %}
     </body>
 </html>

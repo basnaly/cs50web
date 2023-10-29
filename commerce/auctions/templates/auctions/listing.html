@@ -79,7 +79,8 @@
                                         <input autofocus class="form-control m-2" type="number" name="bid" placeholder="Bid"
                                             min="{% if last_bid %}{{ last_bid.bid|add:1 }}{% else %}{{ listing.price }}{% endif %}"/>
                                     </div>
-                                    <button type="submit" class="btn btn-outline-dark ms-2" disabled="{% if last_bid.user.id == user.id %}true{% endif %}" >
+                                    <button type="submit" class="btn btn-outline-dark ms-2"  
+                                        {% if last_bid and last_bid.user.id == user.id %}disabled{% endif %} >
                                         Place Bid
                                     </button>
                                 </form>
