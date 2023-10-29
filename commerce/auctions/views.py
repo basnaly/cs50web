@@ -72,6 +72,7 @@ def create_listing(request):
         category = request.POST["category"]
         price = request.POST["price"]
         image = request.POST["image"] 
+        user = User.objects.get(id=request.user.id)
         try:
             current_listing = Listing.objects.create(
                 title = title,
@@ -79,8 +80,10 @@ def create_listing(request):
                 category = category,
                 price = price,
                 image = image,
+                owner = user,
             )
             current_listing.save()
+            print(current_listing)
         except IntegrityError:
             return render(request, "auctions/create_listing.html", {
                 "message": "Test"
@@ -109,10 +112,13 @@ def category_items(request, name):
 
 def listing(request, name):
     try:
-        print(request.GET)
-        user = User.objects.get(id=request.user.id)
         listing = Listing.objects.get(id=name)
-        watchlist = Watchitem.objects.filter(listing=listing, user=user)
+        if request.user and request.user.id:
+            user = User.objects.get(id=request.user.id)
+            watchlist = Watchitem.objects.filter(listing=listing, user=user)
+        else:
+            watchlist = None
+        
         last_bid = None
         bids = list(listing.bids.all())
         bids_count = len(bids)

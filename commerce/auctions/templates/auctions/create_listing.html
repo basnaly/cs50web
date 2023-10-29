@@ -6,6 +6,8 @@
 
         <h3 class="mb-5 text-center">Create new listing:</h3>
 
+        <div>{{ message }}</div>
+
         <form action="{% url 'create_listing' %}" method="post" class="container d-flex flex-column align-items-center">
             {% csrf_token %}
 

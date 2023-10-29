@@ -4,7 +4,7 @@
     <div class="card shadow container {% if not listing.is_active %}bg-secondary-subtle{% endif %}">
         <div class="card-body d-flex">
             <div  class="d-flex flex-column">
-                <img src="{{ listing.image }}" alt="{{ listing.title }}" style="min-width:400px; max-width:0;">
+                <img src="{{ listing.image }}" alt="{{ listing.title }}" style="min-width:400px; max-width:400px;">
                 {% if user.is_authenticated %}
                     {% if user.id == listing.owner.id %}
                         {% if listing.is_active %}
@@ -22,7 +22,7 @@
                 {% endif %}
             </div>
             <div class="d-flex flex-column m-2 flex-grow-1">
-                <a href={% url 'listing' listing.id %} class="fs-4 fw-bold m-2 text-center">{{ listing.title }}</a>
+                <h2 class="fs-4 fw-bold m-2 text-center text-decoration-underline">{{ listing.title }}</h2>
                 <div class="d-flex align-items-start">
                     <div>
                         <div class="fs-5 m-2 mb-3">Descripion: {{ listing.description }}</div>
@@ -124,7 +124,7 @@
                     {% if listing.is_active %}
                         <div></div>
                     {% else %}
-                        <div class="fs-5 m-2 text-center">This listing was desactivated by: 
+                        <div class="fs-5 m-2 text-center">This listing was deactivated by: 
                             <span class="fs-5 fw-bold">{{ listing.owner }}</span>    
                         </div>
                         <div class="fs-5 text-center">The winner is: 
