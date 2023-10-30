@@ -1,10 +1,17 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django import forms
 
 from .models import User, Listing, Watchitem, Bid, Comments
+
+
+class CommentForm(forms.Form):
+    comment = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Comment', 'class': 'form-control', 'rows': 3}), label='')
 
 
 def index(request):
@@ -33,6 +40,7 @@ def login_view(request):
         return render(request, "auctions/login.html")
 
 
+@login_required
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
@@ -65,6 +73,7 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
+@login_required
 def create_listing(request):
     if request.method == "POST":
         title = request.POST["title"]
@@ -133,9 +142,11 @@ def listing(request, name):
         "bids_count": bids_count,
         "last_bid": last_bid,
         "comments": comments,
+        "form": CommentForm
     })
+ 
     
-    
+@login_required    
 def update_watchlist(request, name):
     listing = Listing.objects.get(id=name)
     user = User.objects.get(id=request.user.id)
@@ -146,7 +157,7 @@ def update_watchlist(request, name):
         watchlist = Watchitem.objects.filter(listing=listing, user=user).delete()
     return HttpResponseRedirect(reverse("listing", args=(name,)))
   
-    
+@login_required   
 def watchlist(request):
     try:
         user = User.objects.get(id=request.user.id)
@@ -157,7 +168,8 @@ def watchlist(request):
         "watchlist": watchlist,
     })
     
-    
+
+@login_required   
 def watchitems_count(request):
     user = User.objects.get(id=request.user.id)
     watchitems_count = len(user.watchlist.all())
@@ -165,7 +177,8 @@ def watchitems_count(request):
         "watchitems_count": watchitems_count
     })
     
-    
+
+@login_required   
 def bid(request, name):
     if request.method == "POST":
         bid = request.POST["bid"] # bid from input
@@ -191,24 +204,27 @@ def bid(request, name):
         return HttpResponseRedirect(reverse("listing", args=(name,)))
         
 
+@login_required
 def comments(request, name):
     if request.method == "POST":
-        comment = request.POST["comment"]
-        user = User.objects.get(id=request.user.id)
-        listing = Listing.objects.get(id=name)
-        comments = list(listing.comments.all())
-        try:
-            current_comment = Comments.objects.create(
-                comment = comment,
-                user = user,
-                listing = listing
-            )
-            current_comment.save()
-        except Comments.DoesNotExist:
-            raise Http404("Comments not found.")
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.cleaned_data["comment"]
+            user = User.objects.get(id=request.user.id)
+            listing = Listing.objects.get(id=name)
+            try:
+                current_comment = Comments.objects.create(
+                    comment = comment,
+                    user = user,
+                    listing = listing
+                )
+                current_comment.save()
+            except Comments.DoesNotExist:
+                raise Http404("Comments not found.")    
         return HttpResponseRedirect(reverse("listing", args=(name,)))
     
-    
+
+@login_required    
 def deactivate(request, name):
     if request.method == "POST":
         listing = Listing.objects.get(id=name)
@@ -216,7 +232,8 @@ def deactivate(request, name):
         listing.save()
         return HttpResponseRedirect(reverse("listing", args=(name,)))
     
-    
+
+@login_required   
 def activate(request, name):
     if request.method == "POST":
         listing = Listing.objects.get(id=name)
