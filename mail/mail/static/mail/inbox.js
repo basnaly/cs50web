@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function compose_email() {
+
+    const exist_email = document.getElementById('parent-email');
+    if (exist_email) {
+        exist_email.remove();
+    }
     // Show compose view and hide other views
     document.querySelector('#emails-view').style.display = 'none';
     document.querySelector('#compose-view').style.display = 'block';
@@ -24,6 +29,11 @@ function compose_email() {
 }
 
 function load_mailbox(mailbox) {
+
+    const exist_email = document.getElementById('parent-email');
+    if (exist_email) {
+        exist_email.remove();
+    }
 
     // Show the mailbox and hide other views
     document.querySelector('#emails-view').style.display = 'block';
@@ -74,18 +84,21 @@ function show_emails(mailbox) {
     fetch(`/emails/${mailbox}`)
         .then(response => response.json())
         .then(emails => {
-            console.log(emails);
 
             for (let email of emails) {
 
                 const parentElement = document.createElement('div');
-                parentElement.className = "d-flex p-2 border ";
+                parentElement.className = "d-flex p-2 border";
                 document.querySelector('#emails-view').append(parentElement);
+                parentElement.addEventListener('click', () => {
+                    show_email(email.id);
+                    parentElement.style = "background-color: lightgray";
+                });
 
                 if (email.read === true) {
                     parentElement.style = "background-color: lightgray";
                 }
-                
+
                 const senderElement = document.createElement('div');
                 senderElement.className = "me-3";
                 senderElement.innerHTML = email.sender;
@@ -101,10 +114,76 @@ function show_emails(mailbox) {
                 timestampElement.innerHTML = email.timestamp;
                 parentElement.append(timestampElement);
             }
-            
+
         })
         .catch(error => {
             console.log('Error:', error);
-        })
+        });
+}
 
+function show_email(email_id) {
+
+    const exist_email = document.getElementById('parent-email');
+    if (exist_email) {
+        exist_email.remove();
+    }
+
+    fetch(`/emails/${email_id}`)
+        .then(response => response.json())
+        .then(email => {
+            console.log(email);
+
+            const parentElement = document.createElement('div');
+            parentElement.className = 'd-flex flex-column shadow-lg p-3 position-fixed bg-primary-subtle fw-medium';
+            parentElement.id = 'parent-email';
+            parentElement.style = "top: 25%; left: 25%; right: 25%; border-radius: 1rem";
+            document.querySelector('.container').append(parentElement);
+
+            const closeElement = document.createElement('button');
+            closeElement.type = 'button';
+            closeElement.className = 'btn-close ms-auto';
+            parentElement.append(closeElement);
+            closeElement.addEventListener('click', () => parentElement.remove())
+
+            const senderElement = document.createElement('div');
+            senderElement.className = 'p-1';
+            senderElement.innerHTML = 'Sender: ' + email.sender;
+            parentElement.append(senderElement);
+
+            const recipientsElement = document.createElement('div');
+            recipientsElement.className = 'p-1';
+            recipientsElement.innerHTML = 'Recipients: ' + email.recipients.join(', ');
+            parentElement.append(recipientsElement);
+
+            const subjectElement = document.createElement('div');
+            subjectElement.className = 'p-1';
+            subjectElement.innerHTML = 'Subject: ' + email.subject;
+            parentElement.append(subjectElement);
+
+            const bodyElement = document.createElement('div');
+            bodyElement.className = 'p-1';
+            bodyElement.innerHTML = 'Body: ' + email.body;
+            parentElement.append(bodyElement);
+
+            const timestampElement = document.createElement('div');
+            timestampElement.className = 'p-1';
+            timestampElement.innerHTML = 'Timestamp: ' + email.timestamp;
+            parentElement.append(timestampElement);
+
+            read_email(email_id);
+
+        })
+        .catch(error => {
+            console.log('Error:', error);
+        });
+}
+
+function read_email(email_id) {
+
+    fetch(`/emails/${email_id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            read: true
+        })
+      });
 }
