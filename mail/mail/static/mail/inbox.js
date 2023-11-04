@@ -208,7 +208,7 @@ function show_email(email_id, mailbox) {
             replyElement.className = 'btn btn-secondary';
             replyElement.innerHTML = 'Reply';
             buttonsElement.append(replyElement);
-            replyElement.addEventListener('click', () => reply(email.id))
+            replyElement.addEventListener('click', () => show_reply_form(email))
 
             read_email(email_id);
 
@@ -246,4 +246,44 @@ function unarchive(email_id) {
             archived: false
         })
       })
+}
+
+function show_reply_form(email) {
+
+    compose_email();
+    document.querySelector('#compose-recipients').value = email.sender;
+    document.querySelector('#compose-subject').value = 'Re: ' + email.subject;
+    document.querySelector('#compose-body').value = email.body;
+
+    document.querySelector('#compose-form').onsubmit = reply_email;
+}
+
+function reply_email() {
+
+    recipients = document.querySelector('#compose-recipients').value;
+    subject = document.querySelector('#compose-subject').value;
+    body = document.querySelector('#compose-body').value;
+
+    fetch(`/emails`, {
+        method: 'POST',
+        body: JSON.stringify({
+            recipients: recipients,
+            subject: subject,
+            body: body
+        })
+    })
+        .then(response => response.json())
+        .then(result => {
+            console.log(result);
+
+            document.querySelector('#compose-message').innerHTML = result.message
+            setTimeout(() => {
+                document.querySelector('#compose-message').innerHTML = '';
+                document.getElementById('sent').click(); //move to sent page
+            }, 5000)
+        })
+        .catch(error => {
+            console.log('Error:', error);
+        })
+        return false;    
 }
