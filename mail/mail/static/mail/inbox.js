@@ -91,7 +91,7 @@ function show_emails(mailbox) {
                 parentElement.className = "d-flex p-2 border";
                 document.querySelector('#emails-view').append(parentElement);
                 parentElement.addEventListener('click', () => {
-                    show_email(email.id);
+                    show_email(email.id, mailbox);
                     parentElement.style = "background-color: lightgray";
                 });
 
@@ -121,7 +121,7 @@ function show_emails(mailbox) {
         });
 }
 
-function show_email(email_id) {
+function show_email(email_id, mailbox) {
 
     const exist_email = document.getElementById('parent-email');
     if (exist_email) {
@@ -170,6 +170,46 @@ function show_email(email_id) {
             timestampElement.innerHTML = 'Timestamp: ' + email.timestamp;
             parentElement.append(timestampElement);
 
+            const buttonsElement = document.createElement('div');
+            buttonsElement.className = 'd-flex justify-content-evenly mt-4 mb-2';
+            parentElement.append(buttonsElement);
+
+            const archiveElement = document.createElement('button');
+            archiveElement.type = 'button';
+            archiveElement.className = 'btn btn-secondary';
+
+            if (email.archived === true) {
+                archiveElement.innerHTML = 'Unarchive';
+            }
+            else {
+                archiveElement.innerHTML = 'Archive';
+            }
+
+            if (mailbox != 'sent') {
+                buttonsElement.append(archiveElement);
+            }
+            
+
+            archiveElement.addEventListener('click', () => {
+                if (email.archived === true) {
+                    unarchive(email.id);
+                    parentElement.remove();
+                    document.getElementById('inbox').click();    
+                }
+                else {
+                    archive(email.id);
+                    parentElement.remove();
+                    document.getElementById('archived').click();
+                }   
+            })
+
+            const replyElement = document.createElement('button');
+            replyElement.type = 'button';
+            replyElement.className = 'btn btn-secondary';
+            replyElement.innerHTML = 'Reply';
+            buttonsElement.append(replyElement);
+            replyElement.addEventListener('click', () => reply(email.id))
+
             read_email(email_id);
 
         })
@@ -186,4 +226,24 @@ function read_email(email_id) {
             read: true
         })
       });
+}
+
+function archive(email_id) {
+
+    fetch(`/emails/${email_id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            archived: true
+        })
+      })
+}
+
+function unarchive(email_id) {
+
+    fetch(`/emails/${email_id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            archived: false
+        })
+      })
 }
