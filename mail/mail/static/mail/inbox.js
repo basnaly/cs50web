@@ -67,7 +67,7 @@ function save_form() {
             setTimeout(() => {
                 document.querySelector('#compose-message').innerHTML = '';
                 document.getElementById('sent').click(); //move to sent page
-            }, 5000)
+            }, 3000)
 
             document.querySelector('#compose-recipients').value = '';
             document.querySelector('#compose-subject').value = '';
@@ -194,12 +194,10 @@ function show_email(email_id, mailbox) {
                 if (email.archived === true) {
                     unarchive(email.id);
                     parentElement.remove();
-                    document.getElementById('inbox').click();    
                 }
                 else {
                     archive(email.id);
-                    parentElement.remove();
-                    document.getElementById('archived').click();
+                    parentElement.remove();   
                 }   
             })
 
@@ -225,7 +223,7 @@ function read_email(email_id) {
         body: JSON.stringify({
             read: true
         })
-      });
+    });
 }
 
 function archive(email_id) {
@@ -235,7 +233,12 @@ function archive(email_id) {
         body: JSON.stringify({
             archived: true
         })
-      })
+    }).then(() => {
+        setTimeout(() => {
+            document.getElementById('archived').click();
+        }, 500)
+        
+    });
 }
 
 function unarchive(email_id) {
@@ -245,16 +248,26 @@ function unarchive(email_id) {
         body: JSON.stringify({
             archived: false
         })
-      })
+    }).then(() => {
+        setTimeout(() => {
+            document.getElementById('inbox').click();
+        }, 500)
+        
+    });
 }
 
 function show_reply_form(email) {
 
     compose_email();
     document.querySelector('#compose-recipients').value = email.sender;
-    document.querySelector('#compose-subject').value = 'Re: ' + email.subject;
-    document.querySelector('#compose-body').value = email.body;
 
+    if (email.subject.indexOf('Re: ') === 0) {    
+        document.querySelector('#compose-subject').value = email.subject;
+    } else {
+        document.querySelector('#compose-subject').value = 'Re: ' + email.subject;
+    }
+    
+    document.querySelector('#compose-body').value = email.body;
     document.querySelector('#compose-form').onsubmit = reply_email;
 }
 
@@ -280,7 +293,7 @@ function reply_email() {
             setTimeout(() => {
                 document.querySelector('#compose-message').innerHTML = '';
                 document.getElementById('sent').click(); //move to sent page
-            }, 5000)
+            }, 3000)
         })
         .catch(error => {
             console.log('Error:', error);
