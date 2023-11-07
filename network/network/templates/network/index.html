@@ -1,5 +1,18 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+
+    <h3 class="m-2">All Posts</h3>
+
+    {% for post in posts %} 
+        <div class="card shadow container my-4">
+            <div class="d-flex flex-column m-2">
+                <div class="m-2">{{ post.owner }}</div>
+                <div class="m-2">{{ post.body }}</div>
+                <div class="m-2">{{ post.created }}</div>
+                <a href class="nav-link">Edit</a>
+            </div>
+        </div>
+    {% endfor %}
+
 {% endblock %}
