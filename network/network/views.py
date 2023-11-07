@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
@@ -14,7 +14,7 @@ class PostForm(forms.Form):
     
 def index(request):
     return render(request, "network/index.html", {
-        "posts": Posts.objects.all()
+        "posts": Posts.objects.all().order_by("-created")
     })
 
 
@@ -75,11 +75,11 @@ def new_post(request):
     if request.method == "POST":
         form = PostForm(request.POST)
         if form.is_valid():
-            new_post = form.cleaned_data["new-post"]
+            new_post = form.cleaned_data["new_post"]
             user = User.objects.get(id=request.user.id)
         try:
             current_post = Posts.objects.create(
-                new_post = new_post,
+                body = new_post,
                 owner = user,
             )
             current_post.save()
@@ -93,3 +93,16 @@ def new_post(request):
         return render(request, "network/new_post.html", {
             "form": PostForm
         })
+        
+        
+@login_required
+def profile(request, name):
+    try: 
+        user_profile = User.objects.get(id=name)
+        posts = user_profile.posts.order_by("-created")
+    except User.DoesNotExist:
+        raise Http404("Posts not found.")
+    return render(request, "network/profile.html", {
+        "user_profile": user_profile,
+        "posts": posts
+    })

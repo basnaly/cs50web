@@ -4,15 +4,24 @@
 
     <h3 class="m-2">All Posts</h3>
 
+    <div class="container ">
     {% for post in posts %} 
-        <div class="card shadow container my-4">
-            <div class="d-flex flex-column m-2">
-                <div class="m-2">{{ post.owner }}</div>
-                <div class="m-2">{{ post.body }}</div>
-                <div class="m-2">{{ post.created }}</div>
-                <a href class="nav-link">Edit</a>
+        
+        <div class="card shadow my-4 container d-flex flex-column mb-2">
+            <a href="{% url 'profile' post.owner.id %}" class="m-2">{{ post.owner }}</a>
+            <div class="m-2">{{ post.body }}</div>
+            <div class="m-2">{{ post.created }}</div>
+            <div class="d-flex my-3">
+                {% if user.id == post.owner.id %}
+                    <button type="button" class="btn btn-success me-5">Edit</button>
+                {% endif %}
+                <button type="button" class="btn btn-light me-5"
+                    {% if user.id == post.owner.id %}disabled{% endif %}>
+                    ❤️ {{ post.likes|length }}
+                </button>
             </div>
         </div>
     {% endfor %}
+</div>
 
 {% endblock %}
