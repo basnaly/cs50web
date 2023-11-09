@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django import forms
 
-from .models import User, Posts
+from .models import User, Posts, Follow
 
 class PostForm(forms.Form):
     new_post = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Post', 'class': 'form-control', 'rows': 3}), label='')
@@ -98,11 +98,49 @@ def new_post(request):
 @login_required
 def profile(request, name):
     try: 
-        user_profile = User.objects.get(id=name)
-        posts = user_profile.posts.order_by("-created")
+        user_profile = User.objects.get(id=name) # bob
+        user_posts = user_profile.posts.order_by("-created") # bob's posts
+        followers_count = len(user_profile.followers.all())
+        folowings_count = len(user_profile.followings.all())
+        loggedin_user = User.objects.get(id=request.user.id)
+        is_follow = len(user_profile.followers.filter(follower=loggedin_user))
     except User.DoesNotExist:
-        raise Http404("Posts not found.")
+        raise Http404("Profile not found.")
     return render(request, "network/profile.html", {
         "user_profile": user_profile,
-        "posts": posts
+        "user_posts": user_posts,
+        "followers_count": followers_count,
+        "folowings_count": folowings_count,
+        "is_follow": is_follow
     })
+    
+    
+@login_required
+def follow(request, name):
+    if request.method == "POST":
+        follower = User.objects.get(id=request.user.id) # charly
+        following = User.objects.get(id=name) # bob
+        try:
+            follow = Follow.objects.create(
+                follower = follower,
+                following = following
+            )
+            follow.save()            
+        except Follow.DoesNotExist:
+            raise Http404("Follow not found.") 
+    return HttpResponseRedirect(reverse("profile", args=(name,))) 
+
+
+@login_required
+def unfollow(request, name):
+    if request.method == "POST":
+        follower = User.objects.get(id=request.user.id) # charly
+        following = User.objects.get(id=name) # bob
+        try:
+            unfollow = Follow.objects.filter(follower=follower, following=following).delete()
+        except Follow.DoesNotExist:
+            raise Http404("Follow not found.") 
+    return HttpResponseRedirect(reverse("profile", args=(name,)))     
+            
+       
+            

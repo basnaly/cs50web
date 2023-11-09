@@ -5,12 +5,27 @@
     <h3 class="m-2">{{ user_profile.username|title }}'s profile:</h3>
 
         <div class="d-flex flex-column m-4">
-            <div class="d-flex justify-content-evenly">
-                <div class="">Followers: {{ user_profile.followings|length }}</div>
-                <div class="">Followings: {{ user_profile.followers|length }} </div>
+            <div class="d-flex justify-content-evenly align-items-center">
+                <div class="">Followers: <strong>{{ followers_count }}</strong> </div>
+
+                {% if user.is_authenticated %}
+                    {% if is_follow %}
+                        <form action="{% url 'unfollow' user_profile.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Unfollow me</button>
+                        </form>
+                    {% else %}
+                        <form action="{% url 'follow' user_profile.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Follow me</button>
+                        </form>
+                    {% endif%}
+                {% endif%}
+
+                <div class="">Followings: <strong>{{ folowings_count }}</strong> </div>
             </div>
 
-            {% for post in posts %} 
+            {% for post in user_posts %} 
 
                 <div class="card shadow my-4 container d-flex flex-column mb-2">
                     <div class="m-2">{{ post.body }}</div>
