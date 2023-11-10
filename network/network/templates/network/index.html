@@ -2,7 +2,7 @@
 
 {% block body %}
 
-    <h3 class="m-2">All Posts</h3>
+    <h3 class="m-2">{{ title }}</h3>
 
     <div class="container ">
     {% for post in posts %} 
@@ -22,6 +22,6 @@
             </div>
         </div>
     {% endfor %}
-</div>
+    </div>
 
 {% endblock %}

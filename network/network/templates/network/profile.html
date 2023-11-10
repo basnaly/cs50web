@@ -8,7 +8,7 @@
             <div class="d-flex justify-content-evenly align-items-center">
                 <div class="">Followers: <strong>{{ followers_count }}</strong> </div>
 
-                {% if user.is_authenticated %}
+                {% if user.is_authenticated and user_profile.id != user.id %}
                     {% if is_follow %}
                         <form action="{% url 'unfollow' user_profile.id %}" method="post">
                             {% csrf_token %}

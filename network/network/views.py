@@ -14,7 +14,8 @@ class PostForm(forms.Form):
     
 def index(request):
     return render(request, "network/index.html", {
-        "posts": Posts.objects.all().order_by("-created")
+        "posts": Posts.objects.all().order_by("-created"),
+        "title": "All posts"
     })
 
 
@@ -93,17 +94,19 @@ def new_post(request):
         return render(request, "network/new_post.html", {
             "form": PostForm
         })
+  
         
-        
-@login_required
 def profile(request, name):
     try: 
         user_profile = User.objects.get(id=name) # bob
         user_posts = user_profile.posts.order_by("-created") # bob's posts
         followers_count = len(user_profile.followers.all())
         folowings_count = len(user_profile.followings.all())
-        loggedin_user = User.objects.get(id=request.user.id)
-        is_follow = len(user_profile.followers.filter(follower=loggedin_user))
+        if request.user.is_authenticated:
+            loggedin_user = User.objects.get(id=request.user.id)
+            is_follow = len(user_profile.followers.filter(follower=loggedin_user))
+        else:
+            is_follow = False
     except User.DoesNotExist:
         raise Http404("Profile not found.")
     return render(request, "network/profile.html", {
@@ -134,8 +137,8 @@ def follow(request, name):
 @login_required
 def unfollow(request, name):
     if request.method == "POST":
-        follower = User.objects.get(id=request.user.id) # charly
-        following = User.objects.get(id=name) # bob
+        follower = User.objects.get(id=request.user.id)
+        following = User.objects.get(id=name)
         try:
             unfollow = Follow.objects.filter(follower=follower, following=following).delete()
         except Follow.DoesNotExist:
@@ -143,4 +146,19 @@ def unfollow(request, name):
     return HttpResponseRedirect(reverse("profile", args=(name,)))     
             
        
-            
+@login_required
+def following(request):    
+    current_user = User.objects.get(id=request.user.id)
+    try:
+        current_user_followings = Follow.objects.filter(follower=current_user).values_list("following") # max->charly, max->bob
+        list_posts_followings = Posts.objects.filter(owner__in=current_user_followings).order_by("-created")
+    except Follow.DoesNotExist:
+        raise Http404("Follow not found.") 
+    except Posts.DoesNotExist:
+        raise Http404("Posts not found.") 
+    return render (request, "network/index.html", {
+        "posts": list_posts_followings,
+        "title": current_user.username.title() + '`s followings'
+    })
+    
+                   
