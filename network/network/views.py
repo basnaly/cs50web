@@ -8,14 +8,30 @@ from django.urls import reverse
 from django import forms
 
 from .models import User, Posts, Follow
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 class PostForm(forms.Form):
     new_post = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Post', 'class': 'form-control', 'rows': 3}), label='')
     
+ 
 def index(request):
+    posts = Posts.objects.all().order_by("-created")
+    paginator = Paginator(posts, 10)
+    page_num = request.GET.get('page', 1)
+    try:
+        page_obj = paginator.page(int(page_num))
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
     return render(request, "network/index.html", {
-        "posts": Posts.objects.all().order_by("-created"),
-        "title": "All posts"
+        "posts": page_obj.object_list,
+        "title": "All posts",
+        "has_next": page_obj.has_next(),
+        "has_previous":page_obj.has_previous(),
+        "next_page": int(page_num) + 1,
+        "previous_page": int(page_num) - 1,
+        "path": "index" 
     })
 
 
@@ -84,7 +100,6 @@ def new_post(request):
                 owner = user,
             )
             current_post.save()
-            print(current_post)
         except IntegrityError:
             return render(request, "network/new_post.html", {
                 "message": "Test"
@@ -149,16 +164,28 @@ def unfollow(request, name):
 @login_required
 def following(request):    
     current_user = User.objects.get(id=request.user.id)
+    page_num = request.GET.get('page', 1)
     try:
         current_user_followings = Follow.objects.filter(follower=current_user).values_list("following") # max->charly, max->bob
         list_posts_followings = Posts.objects.filter(owner__in=current_user_followings).order_by("-created")
+        paginator = Paginator(list_posts_followings, 10)
+        page_obj = paginator.page(int(page_num))
     except Follow.DoesNotExist:
         raise Http404("Follow not found.") 
     except Posts.DoesNotExist:
         raise Http404("Posts not found.") 
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
     return render (request, "network/index.html", {
-        "posts": list_posts_followings,
-        "title": current_user.username.title() + '`s followings'
+        "posts": page_obj.object_list,
+        "title": current_user.username.title() + '`s followings',
+        "has_next": page_obj.has_next(),
+        "has_previous":page_obj.has_previous(),
+        "next_page": int(page_num) + 1,
+        "previous_page": int(page_num) -1, 
+        "path": "following"     
     })
     
                    

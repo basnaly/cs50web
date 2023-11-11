@@ -21,7 +21,18 @@
                 </button>
             </div>
         </div>
+        
     {% endfor %}
+
+        <div class="d-flex justify-content-evenly m-4 pagination">
+            {% if has_previous %}
+                <a href="{% url path %}?page={{ previous_page }}" class="page-link rounded">Previous</a>
+            {% endif %}
+            {% if has_next %}
+                <a href="{% url path %}?page={{ next_page }}" class="page-link rounded">Next</a>
+            {% endif %}
+        </div>
     </div>
+
 
 {% endblock %}
