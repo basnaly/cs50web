@@ -2,10 +2,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse, HttpResponseServerError
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 from .models import User, Posts, Follow
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -188,4 +190,31 @@ def following(request):
         "path": "following"     
     })
     
-                   
+
+@csrf_exempt   
+@login_required
+def edit(request, name):
+    if request.method == "POST":
+        current_user = User.objects.get(id=request.user.id)
+        selected_post = Posts.objects.get(id=name) 
+        if (current_user == selected_post.owner): 
+            corrected_post = json.loads(request.body)
+            selected_post.body = corrected_post['body']
+            try:
+                selected_post.save()
+            except: 
+                return JsonResponse({
+                    "message": "Something went wrong."
+                }, status=500) 
+            return JsonResponse({
+                "message": "Your post was updated!"
+            })
+        else:
+            return JsonResponse({
+                "message": "It's not your post!"
+            }, status=403)
+            
+            
+
+                
+          
