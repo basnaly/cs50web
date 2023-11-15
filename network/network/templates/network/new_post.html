@@ -4,6 +4,10 @@
 
     <h3 class="m-2">New Post</h3>
 
+    {% if message %}
+        <div class="m-2">{{ message }}</div>
+    {% endif %}
+
     <form action="{% url 'new_post' %}" method="post" class="container d-flex flex-column m-4 align-items-start">
         {% csrf_token %}
 

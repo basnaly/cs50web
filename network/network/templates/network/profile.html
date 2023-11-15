@@ -35,9 +35,16 @@
                         {% if user.id == post.owner.id %}
                             <button type="button" class="btn btn-success me-5">Edit</button>
                         {% endif %}
-                        <button type="button" class="btn btn-light me-5" 
+                        
+                        <button type="button" id="click_button_{{ post.id }}" 
+                            {% if post.liked_by_loggedin_user == 0 %} 
+                                onClick="like({{ post.id }})" class="btn btn-light border me-5"
+                            {% else %}
+                                onClick="unlike({{ post.id }})" class="btn bg-success-subtle border me-5"
+                            {% endif %}
                             {% if user.id == post.owner.id %}disabled{% endif %}>
-                            ❤️ {{ post.likes|length }}    
+                            ❤️ 
+                            <span id="like_{{ post.id }}">{{ post.likes_count }}</span>
                         </button>
                     </div>
                 </div>
