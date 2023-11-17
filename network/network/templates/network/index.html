@@ -28,7 +28,7 @@
                     {% else %}
                         onClick="unlike({{ post.id }})" class="btn bg-success-subtle border me-5"
                     {% endif %}
-                    {% if user.id == post.owner.id %}disabled{% endif %}>
+                    {% if user.id == post.owner.id or not user.is_authenticated %}disabled{% endif %}>
                     ❤️
                     <span id="like_{{ post.id }}">{{ post.likes_count }}</span>
                 </button>

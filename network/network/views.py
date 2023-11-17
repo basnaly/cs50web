@@ -1,6 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.db.models import Prefetch
 
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse, HttpResponseServerError
@@ -111,7 +110,13 @@ def new_post(request):
             # Get new post from the form and user id from request
             new_post = form.cleaned_data["new_post"]
             user = User.objects.get(id=request.user.id)
-        
+            
+            if not new_post:
+                return render(request, "network/new_post.html", {
+                    "message": "Post cannot be empty!",
+                    "form": form
+                })
+                
         # Attempt to save the form in db
         try:
             current_post = Posts.objects.create(
@@ -138,14 +143,14 @@ def profile(request, name):
         
         if request.user.is_authenticated:
             loggedin_user = User.objects.get(id=request.user.id)
-            is_follow = len(user_profile.followers.filter(follower=loggedin_user))
+            is_follow = len(user_profile.followers.filter(follower=loggedin_user)) 
             
         else:
             loggedin_user = None
             is_follow = False
         
         # Get user's posts with likes_count and liked_by_loggedin_user count
-        user_posts = user_profile.posts.order_by("-created").annotate(
+        user_posts = user_profile.posts.order_by("-created").annotate(  
             likes_count=models.Count('likes'),
             liked_by_loggedin_user=models.Count('likes', filter=models.Q(likes__owner=loggedin_user))
         )   
@@ -177,6 +182,10 @@ def follow(request, name):
                 follower = follower,
                 following = following
             )
+            
+            if not follow.is_valid_follow():
+                return HttpResponseRedirect(reverse("profile", args=(name,))) 
+                
             follow.save()            
         except Follow.DoesNotExist:
             raise Http404("Follow not found.") 
@@ -248,6 +257,9 @@ def edit(request, name):
         if (loggedin_user == selected_post.owner): 
             corrected_post = json.loads(request.body)
             selected_post.body = corrected_post['body']
+            
+            if not selected_post.is_valid_post():
+                return HttpResponse("Post cannot be empty!", status=500) 
             try:
                 selected_post.save()
             except: 
@@ -278,6 +290,11 @@ def like(request, name):
                 owner = loggedin_user,
                 post = liked_post
             )
+            if not like.is_valid_like():
+                return JsonResponse({
+                    "message": "You cannot like your own post!"
+                }, status=500)
+                
             like.save()
             
         except Likes.DoesNotExist:

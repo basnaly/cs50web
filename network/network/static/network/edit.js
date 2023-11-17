@@ -64,17 +64,24 @@ function save_post(post_id) {
         body: JSON.stringify({
             body: corrected_body,
         })
-    }).then(response => response.json())
-        .then(result => {
+    })
+    .then(async response => {
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(text);
+        }
+    })
+    .then(response => response.json())
+    .then(result => {
 
             const message = result.message;
             show_message(message);
             document.getElementById(`post_body_${post_id}`).innerHTML = corrected_body;
 
-        })
-        .catch(error => {
+    })
+    .catch(error => {
             show_message(error);
-        })
+    })
 }
 
 
