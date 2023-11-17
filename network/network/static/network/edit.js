@@ -66,12 +66,13 @@ function save_post(post_id) {
         })
     })
     .then(async response => {
-        if (!response.ok) {
-            const text = await response.text();
-            throw new Error(text);
+        
+        if (!response.ok) { 
+            const message = await response.text(); 
+            throw new Error(message);
         }
+        return await response.json();
     })
-    .then(response => response.json())
     .then(result => {
 
             const message = result.message;
@@ -79,8 +80,8 @@ function save_post(post_id) {
             document.getElementById(`post_body_${post_id}`).innerHTML = corrected_body;
 
     })
-    .catch(error => {
-            show_message(error);
+    .catch( error => {
+        show_message(error);
     })
 }
 
