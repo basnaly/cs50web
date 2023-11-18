@@ -1,0 +1,20 @@
+{% extends "petclinic/layout.html" %}
+
+{% block body %}
+
+    <div id="registerapp"></div>
+
+    <script type="text/babel">
+
+        function App() {
+
+            return (
+                    <div>Register</div>
+                );
+
+        }
+
+        ReactDOM.render(<App />, document.querySelector("#registerapp"));
+    </script>
+    
+{% endblock %}
