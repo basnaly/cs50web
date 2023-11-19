@@ -13,6 +13,10 @@
         <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
         <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
 
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@1,600&display=swap" rel="stylesheet">
+
         <link href="{% static 'styles.css' %}" rel="stylesheet">
 
     </head>
@@ -25,21 +29,31 @@
             function App() {
 
                 return (
-                    <nav className="navbar navbar-expand-lg navbar-light bg-light ms-2 overflow-auto flex-shrink-0">
-                        <a className="navbar-brand" href="#">Pet Clinic</a>
+                    <nav className="navbar navbar-expand-lg navbar-light bg-success-subtle ps-2 overflow-auto flex-shrink-0">
+                        <a className="navbar-brand fs-4" href="#">Pet Clinic</a>
 
-                        <div className="overflow-auto">
-                            <ul className="navbar-nav mr-auto">
+                        <div className="overflow-auto fs-5">
+                            <ul className="navbar-nav mr-auto ms-4 mt-2 nav-underline">
                                 <li className="nav-item">
-                                    <a className="nav-link" href="#"><strong>Nursery</strong></a>
+                                    <a className="nav-link {% if request.path == '/' %} active {% endif %}" href="/">Nursery</a>
                                 </li>
 
-                                <li className="nav-item">
-                                    <a className="nav-link" href="{% url 'login' %}">Log In</a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link" href="{% url 'register' %}">Register</a>
-                                </li>
+                                {% if user.is_authenticated %}
+
+                                    <li className="nav-item">
+                                        <a className="nav-link {% if request.path == '/logout' %} active {% endif %}" href="{% url 'logout' %}">Log Out</a>
+                                    </li>
+
+                                {% else %}
+
+                                    <li className="nav-item">
+                                        <a className="nav-link {% if request.path == '/login' %} active {% endif %}" href="{% url 'login' %}">Log In</a>
+                                    </li>
+                                    <li className="nav-item">
+                                        <a className="nav-link {% if request.path == '/register' %} active {% endif %}" href="{% url 'register' %}">Register</a>
+                                    </li>
+
+                                {% endif %}
                             </ul>
                         </div>
                     </nav>
@@ -49,12 +63,17 @@
                 ReactDOM.render(<App />, document.querySelector("#app"));
         </script>
 
-        <div class="body overflow-auto">
+        <div class="overflow-auto">
             {% block body %}
             {% endblock %}
         </div>
 
     </body>
 
+    <footer class="vw-100 small text-muted d-flex justify-content-between py-2 mt-auto bg-success-subtle fs-6">
+        <span class="ms-4 text-black">CS50Web</span>
+        <span class="text-black">Final Project</span>
+        <span><a class="harvard me-4" target="_blank" href="https://www.harvard.edu/">Harvard University 2023</a></span>
+    </footer>
 
 </html>
