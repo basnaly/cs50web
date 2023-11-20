@@ -4,8 +4,9 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse, HttpResponseServerError
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
-from .models import User
+from .models import User, Pet
 
 # Create your views here.
 
@@ -74,3 +75,39 @@ def register(request):
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
+
+
+@login_required
+def add_pet(request):
+    user = User.objects.get(id=request.user.id)
+    if request.method == "POST":
+        icon = request.POST["icon"]
+        nickname = request.POST["nickname"]
+        birth_date = request.POST["birth_date"]
+        pet_type = request.POST["pet_type"]
+        details = request.POST["details"]
+        owner = user
+        
+        # Attempt to add new pet
+        try:
+            pet = Pet.objects.create(
+                icon = icon,
+                nickname = nickname,
+                birth_date = birth_date,
+                pet_type = pet_type,
+                details = details,
+                owner = owner
+            )
+            pet.save()
+        except IntegrityError:
+            return render(request, "petclinic/add_pet.html")
+        return render(request, "petclinic/add_pet.html", {
+            "message": f"{nickname} was added!"
+        })
+    else:
+        return render(request, "petclinic/add_pet.html")
+        
+
+@login_required
+def profile(request, name):
+    pass

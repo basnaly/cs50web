@@ -32,7 +32,7 @@
                     <nav className="navbar navbar-expand-lg navbar-light bg-success-subtle ps-2 overflow-auto flex-shrink-0">
                         <a className="navbar-brand fs-4" href="#">Pet Clinic</a>
 
-                        <div className="overflow-auto fs-5">
+                        <div className="overflow-auto w-100 fs-5">
                             <ul className="navbar-nav mr-auto ms-4 mt-2 nav-underline">
                                 <li className="nav-item">
                                     <a className="nav-link {% if request.path == '/' %} active {% endif %}" href="/">Nursery</a>
@@ -41,8 +41,16 @@
                                 {% if user.is_authenticated %}
 
                                     <li className="nav-item">
+                                        <a className="nav-link {% if request.path == '/add_pet' %} active {% endif %}" href="{% url 'add_pet' %}">Add Pet</a>
+                                    </li>
+                                    <li className="nav-item">
                                         <a className="nav-link {% if request.path == '/logout' %} active {% endif %}" href="{% url 'logout' %}">Log Out</a>
                                     </li>
+                                    
+                                    <li className="nav-item ms-auto">
+                                        <a className="nav-link {% if request.path == '/profile' %} active {% endif %}" href="{% url 'profile' %}">My Profile</a>
+                                    </li>
+                                
 
                                 {% else %}
 
