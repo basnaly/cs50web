@@ -2,49 +2,37 @@
 
 {% block body %}
 
-    <div id="indexapp"></div>
+    
+    <div>
+        {% if user.is_authenticated %}
 
-    <script type="text/babel">
+            <div>
+                Index
+            </div>
 
-        function App() {
+        {% else %}
 
-            return (
-                    <div>
-                        {% if user.is_authenticated %}
+            <div class="d-flex flex-column m-4 text-center">
 
-                            <div>
-                                Index
-                            </div>
+                <div class="mt-4 fs-5">
+                    We will care about your pet/s in our nursery!
+                </div>
+                <div class="my-4 fs-5">
+                    To select the dates, price and details please login or register.
+                </div>
 
-                        {% else %}
+                <div class="m-2">
+                    Already have an account? 
+                    <a href="{% url 'login' %}" class="ms-2">Log In here.</a>
+                </div>
 
-                            <div className="d-flex flex-column m-4 text-center">
+                <div class="m-2">
+                    Don't have an account?  
+                    <a href="{% url 'register' %}" class="ms-2">Register here.</a>
+                </div>
+            </div>
 
-                                <div className="mt-4 fs-5">
-                                    We will care about your pet/s in our nursery!
-                                </div>
-                                <div className="my-4 fs-5">
-                                    To select the dates, price and details please login or register.
-                                </div>
-
-                                <div className="m-2">
-                                    Already have an account? 
-                                    <a href="{% url 'login' %}" className="ms-2">Log In here.</a>
-                                </div>
-
-                                <div className="m-2">
-                                    Don't have an account?  
-                                    <a href="{% url 'register' %}" className="ms-2">Register here.</a>
-                                </div>
-                            </div>
-
-                        {% endif %}
-                    </div>
-                );
-
-        }
-
-        ReactDOM.render(<App />, document.querySelector("#indexapp"));
-    </script>
+        {% endif %}
+    </div>
 
 {% endblock %}

@@ -2,66 +2,53 @@
 
 {% block body %}
 
-    <div id="registerapp"></div>
+    <div class="mt-4">
 
-    <script type="text/babel">
+        {% if message %}
+            <div class="ms-3 text-danger fs-5">{{ message }}</div>
+        {% endif %} 
 
-        function App() {
+        <form action="{% url 'register' %}" method="post" class="container d-flex flex-column align-items-center">
+            {% csrf_token %}</input>
+            <div class="form-group mb-4">
+                <input class="form-control" autofocus type="text" name="identical_number" placeholder="Identical Number"/>
+            </div>
 
-            return (
-                    <div className="mt-4">
+            <div class="d-flex">
+                <div class="form-group mb-4 me-4">
+                    <input class="form-control" type="text" name="first_name" placeholder="First Name"/>
+                </div>
+                <div class="form-group mb-4">
+                    <input class="form-control" type="text" name="last_name" placeholder="Last Name"/>
+                </div>
+            </div>
 
-                        {% if message %}
-                            <div className="ms-3 text-danger fs-5">{{ message }}</div>
-                        {% endif %} 
+            <div class="d-flex">
+                <div class="form-group mb-4 me-4">
+                    <input class="form-control" type="phone2numeric" name="phone_number" placeholder="Phone Number"/>
+                </div>
+                <div class="form-group mb-4">
+                    <input class="form-control" type="email" name="email" placeholder="Email Address"/>
+                </div>
+            </div>
 
-                        <form action="{% url 'register' %}" method="post" className="container d-flex flex-column align-items-center">
-                            {% csrf_token %}</input>
-                            <div className="form-group mb-4">
-                                <input className="form-control" autofocus type="text" name="identical_number" placeholder="Identical Number"/>
-                            </div>
+            <div class="d-flex">
+                <div class="form-group mb-4 me-4">
+                    <input class="form-control" type="password" name="password" placeholder="Password"/>
+                </div>
+                <div class="form-group mb-4">
+                    <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password"/>
+                </div>
+            </div>
 
-                            <div className="d-flex">
-                                <div className="form-group mb-4 me-4">
-                                    <input className="form-control" type="text" name="first_name" placeholder="First Name"/>
-                                </div>
-                                <div className="form-group mb-4">
-                                    <input className="form-control" type="text" name="last_name" placeholder="Last Name"/>
-                                </div>
-                            </div>
+            <input class="btn btn-success mb-4" type="submit" value="Register" />
+        </form>
 
-                            <div className="d-flex">
-                                <div className="form-group mb-4 me-4">
-                                    <input className="form-control" type="phone2numeric" name="phone_number" placeholder="Phone Number"/>
-                                </div>
-                                <div className="form-group mb-4">
-                                    <input className="form-control" type="email" name="email" placeholder="Email Address"/>
-                                </div>
-                            </div>
+        <div class="m-2 text-center">
+            Already have an account? 
+            <a href="{% url 'login' %}" class="ms-2">Log In here.</a>
+        </div>
 
-                            <div className="d-flex">
-                                <div className="form-group mb-4 me-4">
-                                    <input className="form-control" type="password" name="password" placeholder="Password"/>
-                                </div>
-                                <div className="form-group mb-4">
-                                    <input className="form-control" type="password" name="confirmation" placeholder="Confirm Password"/>
-                                </div>
-                            </div>
-
-                            <input className="btn btn-success mb-4" type="submit" value="Register" />
-                        </form>
-
-                        <div className="m-2 text-center">
-                            Already have an account? 
-                            <a href="{% url 'login' %}" className="ms-2">Log In here.</a>
-                        </div>
-
-                    </div>
-                );
-
-        }
-
-        ReactDOM.render(<App />, document.querySelector("#registerapp"));
-    </script>
+    </div>
     
 {% endblock %}

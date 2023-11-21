@@ -8,7 +8,7 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=50, blank=True)
     
     def __str__(self):
-        return f"{self.identical_number} {self.phone_number}"
+        return f"{self.identical_number}, {self.phone_number}, {self.identical_number}, {self.first_name}, {self.last_name}, {self.email}"
     
 
 class Pet(models.Model):

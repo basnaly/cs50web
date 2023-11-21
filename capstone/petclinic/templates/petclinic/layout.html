@@ -9,10 +9,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
-        <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-        <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-        <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
-
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@1,600&display=swap" rel="stylesheet">
@@ -22,55 +18,52 @@
     </head>
 
     <body class="vh-100 d-flex flex-column">
+   
+        <nav class="navbar navbar-expand-lg navbar-light bg-success-subtle ps-2 flex-shrink-0">
+            <a class="navbar-brand fs-4" href="#">Pet Clinic</a>
 
-        <div id="app"></div>
+            <div class="w-100 fs-5">
+                <ul class="navbar-nav mr-auto ms-4 mt-2 nav-underline">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %} active {% endif %}" href="/">Nursery</a>
+                    </li>
 
-        <script type="text/babel">
-            function App() {
+                    {% if user.is_authenticated %}
 
-                return (
-                    <nav className="navbar navbar-expand-lg navbar-light bg-success-subtle ps-2 overflow-auto flex-shrink-0">
-                        <a className="navbar-brand fs-4" href="#">Pet Clinic</a>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/add_pet' %} active {% endif %}" href="{% url 'add_pet' %}">Add Pet</a>
+                        </li>
 
-                        <div className="overflow-auto w-100 fs-5">
-                            <ul className="navbar-nav mr-auto ms-4 mt-2 nav-underline">
-                                <li className="nav-item">
-                                    <a className="nav-link {% if request.path == '/' %} active {% endif %}" href="/">Nursery</a>
-                                </li>
-
-                                {% if user.is_authenticated %}
-
-                                    <li className="nav-item">
-                                        <a className="nav-link {% if request.path == '/add_pet' %} active {% endif %}" href="{% url 'add_pet' %}">Add Pet</a>
-                                    </li>
-                                    <li className="nav-item">
-                                        <a className="nav-link {% if request.path == '/logout' %} active {% endif %}" href="{% url 'logout' %}">Log Out</a>
-                                    </li>
-                                    
-                                    <li className="nav-item ms-auto">
-                                        <a className="nav-link {% if request.path == '/profile' %} active {% endif %}" href="{% url 'profile' %}">My Profile</a>
-                                    </li>
-                                
-
-                                {% else %}
-
-                                    <li className="nav-item">
-                                        <a className="nav-link {% if request.path == '/login' %} active {% endif %}" href="{% url 'login' %}">Log In</a>
-                                    </li>
-                                    <li className="nav-item">
-                                        <a className="nav-link {% if request.path == '/register' %} active {% endif %}" href="{% url 'register' %}">Register</a>
-                                    </li>
-
-                                {% endif %}
+                        <div class="dropstart ms-auto">
+                            <a class="btn btn-light dropdown-toggle mt-2 me-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
+                                </svg>
+                            </a>
+                                      
+                            <ul class="dropdown-menu">
+                                <li class="text-center my-1 text-success fs-5">Hello, {{ user.first_name }}!</li>
+                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                <li><hr class="dropdown-divider"/></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
                             </ul>
                         </div>
-                    </nav>
-                );
-            }
+                                
+                    {% else %}
 
-                ReactDOM.render(<App />, document.querySelector("#app"));
-        </script>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/login' %} active {% endif %}" href="{% url 'login' %}">Log In</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/register' %} active {% endif %}" href="{% url 'register' %}">Register</a>
+                        </li>
 
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+                
         <div class="overflow-auto">
             {% block body %}
             {% endblock %}

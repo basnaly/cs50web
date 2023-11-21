@@ -2,44 +2,31 @@
 
 {% block body %}
 
-    <div id="loginapp"></div>
+    <div class="mt-4">
 
-    <script type="text/babel">
+        {% if message %}
+            <div class="ms-3 text-danger fs-5">{{ message }}</div>
+        {% endif %} 
 
-        function App() {
+        <form action="{% url 'login' %}" method="post" class="container d-flex flex-column align-items-center">
+            {% csrf_token %}
+            <div class="form-group mb-4">
+                <input class="form-control" autofocus type="text" name="identical_number" placeholder="Identical Number">
+            </div>
 
-            return (
-                <div className="mt-4">
+            <div class="form-group mb-4">
+                <input class="form-control" type="password" name="password" placeholder="Password">
+            </div>
 
-                    {% if message %}
-                        <div className="ms-3 text-danger fs-5">{{ message }}</div>
-                    {% endif %} 
+            <input class="btn btn-success mb-4" type="submit" value="Login">
 
-                    <form action="{% url 'login' %}" method="post" className="container d-flex flex-column align-items-center">
-                        {% csrf_token %}</input>
-                        <div className="form-group mb-4">
-                            <input className="form-control" autofocus type="text" name="identical_number" placeholder="Identical Number"/>
-                        </div>
+        </form>
 
-                        <div className="form-group mb-4">
-                            <input className="form-control" type="password" name="password" placeholder="Password"/>
-                        </div>
+        <div class="m-2 text-center">
+            Don't have an account?  
+            <a href="{% url 'register' %}" class="ms-2">Register here.</a>
+        </div>
 
-                        <input className="btn btn-success mb-4" type="submit" value="Login" />
-
-                    </form>
-
-                    <div className="m-2 text-center">
-                        Don't have an account?  
-                        <a href="{% url 'register' %}" className="ms-2">Register here.</a>
-                    </div>
-
-                </div>
-                );
-
-        }
-
-        ReactDOM.render(<App />, document.querySelector("#loginapp"));
-    </script>
+    </div>
 
 {% endblock %}
