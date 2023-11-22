@@ -8,6 +8,9 @@ from django.contrib.auth.decorators import login_required
 
 from .models import User, Pet
 
+pet_icons = ['🦮', '🐕‍🦺', '🐶', '🐩', '🐈', '🐈‍⬛', '😼', '😾', '🐇', '🐰', '🐹', '🐁', '🐭', '🦜', '🐦‍⬛', '🦤']
+pet_types = ['Dog', 'Cat', 'Rabbit', 'Hamster', 'Bird']
+
 # Create your views here.
 
 def index(request):
@@ -80,6 +83,7 @@ def logout_view(request):
 @login_required
 def add_pet(request):
     user = User.objects.get(id=request.user.id)
+    user_pets = Pet.objects.filter(owner=user)
     if request.method == "POST":
         icon = request.POST["icon"]
         nickname = request.POST["nickname"]
@@ -100,14 +104,97 @@ def add_pet(request):
             )
             pet.save()
         except IntegrityError:
-            return render(request, "petclinic/add_pet.html")
+            return render(request, "petclinic/add_pet.html", {
+                "icons": pet_icons,
+                "types": pet_types
+            })
         return render(request, "petclinic/add_pet.html", {
-            "message": f"{nickname} was added!"
+            "message": f"{nickname} was added!",
+            "icons": pet_icons,
+            "types": pet_types,
+            "pets": user_pets
         })
     else:
-        return render(request, "petclinic/add_pet.html")
-        
+        return render(request, "petclinic/add_pet.html", {
+            "icons": pet_icons,
+            "types": pet_types,
+            "pets": user_pets
+        })
+           
 
 @login_required
-def profile(request, name):
-    pass
+def profile(request):
+    user = User.objects.get(id=request.user.id)
+    user_pets = Pet.objects.filter(owner=user)
+    if request.method == "POST":
+        first_name = request.POST["first_name"]
+        last_name = request.POST["last_name"]
+        phone_number = request.POST["phone_number"]
+        email = request.POST["email"]
+       
+        # Attempt to update the user
+        try:
+            user.first_name = first_name
+            user.last_name = last_name 
+            user.phone_number = phone_number
+            user.email = email
+            user.save()
+        except IntegrityError:
+            return render(request, "petclinic/profile.html", {
+                "message": "Something went wrong. Try again later.",
+                "pets": user_pets,
+            })
+        return render(request, "petclinic/profile.html", {
+                "message": "Your profile was updated!",
+                "pets": user_pets,
+                "user": user,
+            })
+            
+    else:
+        return render(request, "petclinic/profile.html", {
+            "pets": user_pets
+        })
+            
+        
+@login_required
+def pet_profile(request, name):
+    owner = User.objects.get(id=request.user.id)
+    user_pets = Pet.objects.filter(owner=owner)
+    try:
+        pet = Pet.objects.get(id=name)
+    except Pet.DoesNotExist:
+        raise Http404("It is not your pet!")
+    if pet.owner.identical_number != owner.identical_number:
+        raise Http404("It is not your pet!")
+         
+    if request.method == "POST":
+        icon = request.POST["icon"]
+        nickname = request.POST["nickname"]
+        birth_date = request.POST["birth_date"]
+        details = request.POST["details"]
+        
+        # Attempt to update the pet
+        try:
+            pet.icon = icon
+            pet.nickname = nickname 
+            pet.birth_date = birth_date
+            pet.details = details
+            pet.save()
+        except IntegrityError:
+            return render(request, "petclinic/pet_profile.html", {
+                "message": "Something went wrong. Try again later.",
+                "pet": pet,
+                "pets": user_pets,
+            })
+        return render(request, "petclinic/pet_profile.html", {
+                "message": f"{nickname} was updated!",
+                "pet": pet,
+                "pets": user_pets,
+            })
+            
+    else:
+        return render(request, "petclinic/pet_profile.html", {
+            "pet": pet,
+            "pets": user_pets,
+            "icons": pet_icons,
+        })

@@ -11,5 +11,5 @@ urlpatterns = [
     path("add_pet", views.add_pet, name="add_pet"),
     
     path("profile", views.profile, name="profile"),
-    
+    path("pet_profile/<str:name>", views.pet_profile, name="pet_profile"),
 ]

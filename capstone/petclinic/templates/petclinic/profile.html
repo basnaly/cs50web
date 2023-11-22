@@ -1,0 +1,55 @@
+{% extends "petclinic/layout.html" %}
+
+{% block body %}
+
+    <div class="mt-4">
+
+        {% if message %}
+            <script>
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    const message = document.querySelector('#message').innerHTML;
+                    setTimeout(() => {
+                        document.querySelector('#message').innerHTML = "";
+                    }, 3000)
+                })
+
+            </script>
+            <div class="ms-3 text-danger fs-5" id="message">{{ message }}</div>
+        {% endif %} 
+
+        <form action="{% url 'profile' %}" method="post" class="container d-flex flex-column align-items-center">
+            {% csrf_token %}
+            <div class="input-group mb-4 w-auto">
+                <span class="input-group-text" id="profile1">Identical Number</span>
+                <div class="form-control fs-5">{{ user.username }}</div>
+            </div>
+
+            <div class="d-flex">
+                <div class="input-group mb-4 me-4">
+                    <span class="input-group-text" id="profile2">First Name</span>
+                    <input class="form-control text-success fs-5" type="text" name="first_name" value="{{ user.first_name }}" placeholder="First Name">
+                </div>
+                <div class="input-group mb-4">
+                    <span class="input-group-text" id="profile3">Last Name</span>
+                    <input class="form-control text-success fs-5" type="text" name="last_name" value="{{ user.last_name }}" placeholder="Last Name">
+                </div>
+            </div>
+
+            <div class="d-flex">
+                <div class="input-group mb-4 me-4">
+                    <span class="input-group-text" id="profile4">Phone Number</span>
+                    <input class="form-control text-success fs-5" type="phone2numeric" name="phone_number" value="{{ user.phone_number }}" placeholder="Phone Number">
+                </div>
+                <div class="input-group mb-4">
+                    <span class="input-group-text" id="profile45">Email</span>
+                    <input class="form-control text-success fs-5" type="email" name="email" value="{{ user.email }}" placeholder="Email Address">
+                </div>
+            </div>
+                
+            <input class="btn btn-success mb-4" type="submit" value="Save">
+        </form>
+
+    </div>
+    
+{% endblock %}

@@ -43,8 +43,10 @@
                                       
                             <ul class="dropdown-menu">
                                 <li class="text-center my-1 text-success fs-5">Hello, {{ user.first_name }}!</li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">My profile</a></li>
+                                {% for pet in pets %}
+                                    <li><a class="dropdown-item" href="{% url 'pet_profile' pet.id %}">{{ pet.icon }} {{ pet.nickname }}</a></li>
+                                {% endfor%}
                                 <li><hr class="dropdown-divider"/></li>
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
                             </ul>
