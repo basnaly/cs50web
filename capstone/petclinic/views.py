@@ -5,6 +5,8 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonRespons
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.forms.models import model_to_dict
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import User, Pet
 
@@ -155,6 +157,18 @@ def profile(request):
             "pets": user_pets
         })
             
+@login_required
+def pet_list(request):
+    owner = User.objects.get(id=request.user.id)
+    user_pets = Pet.objects.filter(owner=owner).values()
+    
+    # Convert ValuesQuerySet into Python list
+    pets_list = [pet for pet in user_pets]
+    
+    return JsonResponse({
+        "pets": pets_list
+    })
+
         
 @login_required
 def pet_profile(request, name):
@@ -197,4 +211,27 @@ def pet_profile(request, name):
             "pet": pet,
             "pets": user_pets,
             "icons": pet_icons,
+        })
+        
+@csrf_exempt        
+@login_required
+def delete_pet(request, name):
+    owner = User.objects.get(id=request.user.id)
+    user_pets = Pet.objects.filter(owner=owner)
+    try:
+        pet = Pet.objects.get(id=name)
+    except Pet.DoesNotExist:
+        raise Http404("It is not your pet!")
+    if pet.owner.identical_number != owner.identical_number:
+        raise Http404("It is not your pet!")
+    
+    if request.method == "DELETE":
+        try: 
+            pet.delete()
+        except IntegrityError:
+            return JsonResponse({
+                "message": "Something went wrong. Try again later."
+            })
+        return JsonResponse({
+            "message": f"{pet.nickname} was deleted!",
         })

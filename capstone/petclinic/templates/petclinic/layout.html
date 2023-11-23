@@ -15,23 +15,53 @@
 
         <link href="{% static 'styles.css' %}" rel="stylesheet">
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+
+                fetch("/pet_list")
+                .then(response => response.json())
+                .then(data => {
+                    const pets_list = data.pets;
+
+                    for (let i = 0; i < pets_list.length; i++) {
+                        const childElement = document.createElement('a');
+                        childElement.className = "dropdown-item";
+                        childElement.href = `/pet_profile/${pets_list[i].id}`
+                        document.querySelector('#pets-dropdown').append(childElement);
+                        childElement.innerHTML = pets_list[i].icon + "  " + pets_list[i].nickname;
+                    } 
+                })
+                .catch(error => {
+                    console.log('Error', error);
+                })
+            })
+        </script>
+
     </head>
 
     <body class="vh-100 d-flex flex-column">
    
         <nav class="navbar navbar-expand-lg navbar-light bg-success-subtle ps-2 flex-shrink-0">
-            <a class="navbar-brand fs-4" href="#">Pet Clinic</a>
+            <a class="navbar-brand fs-4" href="#"><img src="{% static 'logo.png' %}" 
+                height="75" style="margin: -32px 0 -22px -10px;">
+            </a>
 
             <div class="w-100 fs-5">
                 <ul class="navbar-nav mr-auto ms-4 mt-2 nav-underline">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/' %} active {% endif %}" href="/">Nursery</a>
+                        <a class="nav-link {% if request.path == '/' %} active {% endif %}" href="/">Visit Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/vacination' %} active {% endif %}" href="/vacination">Vacination</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/insurance' %} active {% endif %}" href="/insurance">Insurance</a>
                     </li>
 
                     {% if user.is_authenticated %}
 
                         <li class="nav-item">
-                            <a class="nav-link {% if request.path == '/add_pet' %} active {% endif %}" href="{% url 'add_pet' %}">Add Pet</a>
+                            <a class="nav-link {% if request.path == '/add_pet' %} active {% endif %}" href="{% url 'add_pet' %}">Register Pet</a>
                         </li>
 
                         <div class="dropstart ms-auto">
@@ -44,9 +74,9 @@
                             <ul class="dropdown-menu">
                                 <li class="text-center my-1 text-success fs-5">Hello, {{ user.first_name }}!</li>
                                 <li><a class="dropdown-item" href="{% url 'profile' %}">My profile</a></li>
-                                {% for pet in pets %}
-                                    <li><a class="dropdown-item" href="{% url 'pet_profile' pet.id %}">{{ pet.icon }} {{ pet.nickname }}</a></li>
-                                {% endfor%}
+
+                                <div class="d-flex flex-column" id="pets-dropdown"></div>
+
                                 <li><hr class="dropdown-divider"/></li>
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
                             </ul>
