@@ -52,10 +52,16 @@
                         <a class="nav-link {% if request.path == '/' %} active {% endif %}" href="/">Visit Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/vacination' %} active {% endif %}" href="/vacination">Vacination</a>
+                        <a class="nav-link {% if request.path == '/vaccination' %} active {% endif %}" 
+                            href="{% if user.is_authenticated %} /vacination {% else %} / {% endif %}">
+                            Vacination
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/insurance' %} active {% endif %}" href="/insurance">Insurance</a>
+                        <a class="nav-link {% if request.path == '/insurance' %} active {% endif %}" 
+                            href="{% if user.is_authenticated %} /insurance {% else %} / {% endif %}">
+                            Insurance
+                        </a>
                     </li>
 
                     {% if user.is_authenticated %}

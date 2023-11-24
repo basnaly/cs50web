@@ -22,3 +22,12 @@ class Pet(models.Model):
     
     def __str__(self): 
         return f"{self.icon} {self.nickname} {self.birth_date} {self.pet_type} {self.details} {self.created} {self.owner}" 
+
+class Insurance(models.Model):
+    start_date = models.DateField()
+    monthly_price = models.IntegerField()
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="insurances")
+    pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name="insurance")
+    
+    def __str__(self):
+        return f"{self.start_date} {self.monthly_price} {self.owner} {self.pet}"

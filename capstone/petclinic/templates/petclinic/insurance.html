@@ -1,0 +1,35 @@
+{% extends "petclinic/layout.html" %}
+
+{% block body %}
+
+    <div class="d-flex flex-column mb-3">
+
+        <div class="mt-3">
+            <div class="text-center fs-5 mb-1">The insurance will give you:</div>
+            <ul>
+                <li class="ms-5">Free visits to our vets.</li>
+                <li class="ms-5">Free yearly mandatory vaccinations.</li>
+                <li class="ms-5">Once a year free consalting to vet dietarian.</li>
+            </ul>
+        </div>
+
+        <hr/>
+
+        <div class="text-center fs-5 mb-5">
+            To get more information select you pet beloow:
+        </div>
+
+        <div class="dropdown text-center">
+            <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Select you pet
+            </button>
+            <ul class="dropdown-menu">
+                {% for pet in pets %}
+                    <li><a class="dropdown-item fs-5" href="{% url 'pet_insurance' pet.id %}">{{ pet.icon }} {{ pet.nickname }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+
+{% endblock %}

@@ -15,4 +15,6 @@ urlpatterns = [
     path("pet_profile/<str:name>", views.pet_profile, name="pet_profile"),
     path("delete_pet/<str:name>", views.delete_pet, name="delete_pet"),
     
+    path("insurance", views.insurance, name="insurance"),
+    path("pet_insurance/<str:name>", views.pet_insurance, name="pet_insurance"),
 ]

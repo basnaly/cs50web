@@ -19,7 +19,8 @@
                     document.querySelector('#delete-pet').innerHTML = data.message;
 
                     setTimeout(() => {
-                        document.querySelector('#delete-pet').innerHTML = "";  
+                        // document.querySelector('#delete-pet').innerHTML = "";  
+                        document.querySelector('#pet-profile').innerHTML = "";
                         window.location.replace("{% url 'index' %}");
                     }, 3000)  
                 })
@@ -83,10 +84,33 @@
 
             <div class="">
                 <input class="btn btn-success mb-4 me-4" type="submit" value="Save Pet">
-                <button class="btn btn-danger mb-4" id="delete-pet" onClick="deletePet('{{pet.id}}'); return false;">Delete Pet 😢</button>
+                <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    Delete Pet 😢
+                </button>     
+            </div>
+
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Delete pet</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    <div class="modal-body">
+                        <div>Are you shure you want to delete your
+                            <span class="text-success fs-5">{{ pet.pet_type|lower }} {{ pet.nickname }}</span>?
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger" onClick="deletePet('{{pet.id}}'); return false;" id="delete-pet">
+                            Delete
+                        </button>
+                    </div>
+                  </div>
+                </div>
             </div>
         </form>
-
     </div>
     
 {% endblock %}

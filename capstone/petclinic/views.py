@@ -8,10 +8,11 @@ from django.contrib.auth.decorators import login_required
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import User, Pet
+from .models import User, Pet, Insurance
 
 pet_icons = ['🦮', '🐕‍🦺', '🐶', '🐩', '🐈', '🐈‍⬛', '😼', '😾', '🐇', '🐰', '🐹', '🐁', '🐭', '🦜', '🐦‍⬛', '🦤']
 pet_types = ['Dog', 'Cat', 'Rabbit', 'Hamster', 'Bird']
+MONTHLY_PRICE = {'Dog': 30, 'Cat': 25, 'Rabbit': 20, 'Hamster': 15, 'Bird': 10}
 
 # Create your views here.
 
@@ -235,3 +236,75 @@ def delete_pet(request, name):
         return JsonResponse({
             "message": f"{pet.nickname} was deleted!",
         })
+        
+        
+@login_required
+def insurance(request):
+    owner = User.objects.get(id=request.user.id)
+    user_pets = Pet.objects.filter(owner=owner).values()
+    pets_list = [pet for pet in user_pets]
+    return render(request, "petclinic/insurance.html", {
+            "pets": pets_list,
+        })
+    
+    
+@login_required
+def pet_insurance(request, name):
+    owner = User.objects.get(id=request.user.id)
+    try: 
+        pet = Pet.objects.get(id=name)
+    except Pet.DoesNotExist:
+        raise Http404("It is not your pet!")
+    if pet.owner.identical_number != owner.identical_number:
+        raise Http404("It is not your pet!")
+    
+    if request.method == "GET":
+        insurance = None
+        try:
+            insurance = Insurance.objects.get(pet=pet)
+            print(insurance)
+        except Insurance.DoesNotExist:
+            pass
+        return render(request, "petclinic/pet_insurance.html", {
+                    "pet": pet,
+                    "insurance": insurance,  
+                    "monthly_price": MONTHLY_PRICE[pet.pet_type]
+                })
+    else:
+        start_date = request.POST["start_date"]
+        monthly_price = MONTHLY_PRICE[pet.pet_type]
+        # Attempt to create new insurance
+        try:
+            insurances = Insurance.objects.filter(pet=pet)
+            if len(insurances) == 0:
+                insurance = Insurance.objects.create(
+                    start_date = start_date,
+                    monthly_price = monthly_price,
+                    owner = owner,
+                    pet = pet
+                )
+                insurance.save()
+            else:
+                return render(request, "petclinic/pet_insurance.html", {
+                    "pet": pet,
+                    "insurance": insurances[0],  
+                    "monthly_price": MONTHLY_PRICE[pet.pet_type]
+                })
+        except IntegrityError:
+            return render(request, "petclinic/pet_insurance.html", {
+                "message": "Something went wrong. Try again later.",
+                "pet": pet,
+                "insurance": insurance,  
+                "monthly_price": MONTHLY_PRICE[pet.pet_type]
+            })
+        return render(request, "petclinic/pet_insurance.html", {
+            "message": "We've got your request. We'll call back you during 1 work day.",
+            "pet": pet,
+            "insurance": insurance,  
+            "monthly_price": MONTHLY_PRICE[pet.pet_type]
+        })
+        
+
+        
+       
+    
