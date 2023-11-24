@@ -41,7 +41,7 @@
                 <div class="d-flex align-items-center">
                     <div class="input-group mb-3 mx-3 w-auto">
                         <span class="input-group-text" id="pet-insurance1">Select start date of insurance</span>
-                        <input class="form-control" type="date" name="start_date">
+                        <input class="form-control" type="date" name="start_date" min={{ today|date:"Y-m-d" }}>
                     </div>
                     <div class="input-group mb-3 mx-3 w-auto"> 
                         <span class="input-group-text" id="pet-insurance2">Monthly price, $</span>

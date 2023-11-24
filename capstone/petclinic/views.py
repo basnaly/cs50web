@@ -8,10 +8,12 @@ from django.contrib.auth.decorators import login_required
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 
+import datetime
+
 from .models import User, Pet, Insurance
 
-pet_icons = ['🦮', '🐕‍🦺', '🐶', '🐩', '🐈', '🐈‍⬛', '😼', '😾', '🐇', '🐰', '🐹', '🐁', '🐭', '🦜', '🐦‍⬛', '🦤']
-pet_types = ['Dog', 'Cat', 'Rabbit', 'Hamster', 'Bird']
+PET_ICONS = ['🦮', '🐕‍🦺', '🐶', '🐩', '🐈', '🐈‍⬛', '😼', '😾', '🐇', '🐰', '🐹', '🐁', '🐭', '🦜', '🐦‍⬛', '🦤']
+PET_TYPES = ['Dog', 'Cat', 'Rabbit', 'Hamster', 'Bird']
 MONTHLY_PRICE = {'Dog': 30, 'Cat': 25, 'Rabbit': 20, 'Hamster': 15, 'Bird': 10}
 
 # Create your views here.
@@ -108,20 +110,23 @@ def add_pet(request):
             pet.save()
         except IntegrityError:
             return render(request, "petclinic/add_pet.html", {
-                "icons": pet_icons,
-                "types": pet_types
+                "icons": PET_ICONS,
+                "types": PET_TYPES,
+                "today": datetime.datetime.now()
             })
         return render(request, "petclinic/add_pet.html", {
             "message": f"{nickname} was added!",
-            "icons": pet_icons,
-            "types": pet_types,
-            "pets": user_pets
+            "icons": PET_ICONS,
+            "types": PET_TYPES,
+            "pets": user_pets,
+            "today": datetime.datetime.now()
         })
     else:
         return render(request, "petclinic/add_pet.html", {
-            "icons": pet_icons,
-            "types": pet_types,
-            "pets": user_pets
+            "icons": PET_ICONS,
+            "types": PET_TYPES,
+            "pets": user_pets,
+            "today": datetime.datetime.now()
         })
            
 
@@ -187,7 +192,6 @@ def pet_profile(request, name):
         nickname = request.POST["nickname"]
         birth_date = request.POST["birth_date"]
         details = request.POST["details"]
-        
         # Attempt to update the pet
         try:
             pet.icon = icon
@@ -200,18 +204,21 @@ def pet_profile(request, name):
                 "message": "Something went wrong. Try again later.",
                 "pet": pet,
                 "pets": user_pets,
+                "today": datetime.datetime.now()
             })
         return render(request, "petclinic/pet_profile.html", {
                 "message": f"{nickname} was updated!",
                 "pet": pet,
                 "pets": user_pets,
+                "today": datetime.datetime.now()
             })
             
     else:
         return render(request, "petclinic/pet_profile.html", {
             "pet": pet,
             "pets": user_pets,
-            "icons": pet_icons,
+            "icons": PET_ICONS,
+            "today": datetime.datetime.now()
         })
         
 @csrf_exempt        
@@ -262,13 +269,13 @@ def pet_insurance(request, name):
         insurance = None
         try:
             insurance = Insurance.objects.get(pet=pet)
-            print(insurance)
         except Insurance.DoesNotExist:
             pass
         return render(request, "petclinic/pet_insurance.html", {
                     "pet": pet,
                     "insurance": insurance,  
-                    "monthly_price": MONTHLY_PRICE[pet.pet_type]
+                    "monthly_price": MONTHLY_PRICE[pet.pet_type],
+                    "today": datetime.datetime.now()
                 })
     else:
         start_date = request.POST["start_date"]
@@ -288,20 +295,23 @@ def pet_insurance(request, name):
                 return render(request, "petclinic/pet_insurance.html", {
                     "pet": pet,
                     "insurance": insurances[0],  
-                    "monthly_price": MONTHLY_PRICE[pet.pet_type]
+                    "monthly_price": MONTHLY_PRICE[pet.pet_type],
+                    "today": datetime.datetime.now()
                 })
         except IntegrityError:
             return render(request, "petclinic/pet_insurance.html", {
                 "message": "Something went wrong. Try again later.",
                 "pet": pet,
                 "insurance": insurance,  
-                "monthly_price": MONTHLY_PRICE[pet.pet_type]
+                "monthly_price": MONTHLY_PRICE[pet.pet_type],
+                "today": datetime.datetime.now()
             })
         return render(request, "petclinic/pet_insurance.html", {
             "message": "We've got your request. We'll call back you during 1 work day.",
             "pet": pet,
             "insurance": insurance,  
-            "monthly_price": MONTHLY_PRICE[pet.pet_type]
+            "monthly_price": MONTHLY_PRICE[pet.pet_type],
+            "today": datetime.datetime.now()
         })
         
 

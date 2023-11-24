@@ -5,7 +5,18 @@
     <div class="mt-4">
 
         {% if message %}
-            <div class="ms-3 text-danger fs-5">{{ message }}</div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const message = document.querySelector('#message').innerHTML;
+                    setTimeout(() => {
+                        document.querySelector('#message').innerHTML = "";
+                        window.location.replace("{% url 'add_pet' %}");
+                    }, 3000)
+                });
+            </script>
+
+            <div class="ms-3 text-danger fs-5" id="message">{{ message }}</div>
         {% endif %} 
 
         <form action="{% url 'add_pet' %}" method="post" class="container d-flex flex-column align-items-center">
@@ -40,7 +51,8 @@
 
             <div class="input-group mb-4 mx-3 w-auto">
                 <span class="input-group-text" id="addon3">Select your pet's birth date</span>
-                <input class="form-control" type="date" name="birth_date" label="Birth date">
+                <input class="form-control" type="date" name="birth_date" label="Birth date"
+                    max={{ today|date:"Y-m-d" }}>
             </div>
 
             <div class="form-group mb-4">
