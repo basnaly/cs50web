@@ -10,16 +10,27 @@ from django.views.decorators.csrf import csrf_exempt
 
 import datetime
 
-from .models import User, Pet, Insurance
+from .models import User, Pet, Insurance, Visit
 
 PET_ICONS = ['🦮', '🐕‍🦺', '🐶', '🐩', '🐈', '🐈‍⬛', '😼', '😾', '🐇', '🐰', '🐹', '🐁', '🐭', '🦜', '🐦‍⬛', '🦤']
 PET_TYPES = ['Dog', 'Cat', 'Rabbit', 'Hamster', 'Bird']
 MONTHLY_PRICE = {'Dog': 30, 'Cat': 25, 'Rabbit': 20, 'Hamster': 15, 'Bird': 10}
+TYPE_VISIT = ['Illness', 'Vaccination', 'Consulting']
+TIME_SLOT = ["9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30"]
 
 # Create your views here.
 
 def index(request):
-    return render(request, "petclinic/index.html")
+    user = User.objects.get(id=request.user.id)
+    user_pets = Pet.objects.filter(owner=user)
+    if request.method == "GET":
+        tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+        return render(request, "petclinic/index.html", {
+            "type_visit_options": TYPE_VISIT,
+            "tomorrow": tomorrow,
+            "pets": user_pets,
+            "time_visits": TIME_SLOT
+        })
 
 
 def login_view(request):
@@ -95,7 +106,6 @@ def add_pet(request):
         birth_date = request.POST["birth_date"]
         pet_type = request.POST["pet_type"]
         details = request.POST["details"]
-        owner = user
         
         # Attempt to add new pet
         try:
@@ -105,7 +115,7 @@ def add_pet(request):
                 birth_date = birth_date,
                 pet_type = pet_type,
                 details = details,
-                owner = owner
+                owner = user
             )
             pet.save()
         except IntegrityError:
@@ -315,6 +325,17 @@ def pet_insurance(request, name):
         })
         
 
+@login_required
+def get_times_for_visit(request): 
+    # GET /get_times_for_visit?date=abc&type=other&pet=2
+    # POST /get_times_for_visit + body {"type": "other", ...}
+    
+    pass
+    
+  
+@login_required
+def save_visit(request): 
+    
+    pass
         
-       
     

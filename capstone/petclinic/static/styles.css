@@ -27,6 +27,15 @@ body::before {
     --bs-dropdown-link-active-bg: rgb(var(--bs-success-rgb));
 }
 
+.form-check-input {
+    --bs-border-color: rgb(var(--bs-success-rgb));
+}
+
+.radios {
+    columns: 3;
+    column-gap: 70px;
+}
+
 .harvard {
     text-decoration: none;
     color: black;

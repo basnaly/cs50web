@@ -31,3 +31,15 @@ class Insurance(models.Model):
     
     def __str__(self):
         return f"{self.start_date} {self.monthly_price} {self.owner} {self.pet}"
+    
+class Visit(models. Model):
+    date_visit = models.DateField()
+    time_visit = models.CharField(max_length=64)
+    type_visit = models.CharField(max_length=128)
+    pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name="visits")
+    
+    def __str__(self):
+        return f"{self.date_visit} {self.time_visit} {self.type_visit} {self.pet}"
+    
+
+    

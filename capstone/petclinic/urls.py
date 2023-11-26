@@ -17,4 +17,7 @@ urlpatterns = [
     
     path("insurance", views.insurance, name="insurance"),
     path("pet_insurance/<str:name>", views.pet_insurance, name="pet_insurance"),
+    
+    path("get_times_for_visit", views.get_times_for_visit, name="get_times_for_visit"),
+    path("save_visit", views.save_visit, name="save_visit"),
 ]
