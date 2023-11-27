@@ -23,14 +23,14 @@ TIME_SLOT = ["9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "16:00", "16:30
 def index(request):
     user = User.objects.get(id=request.user.id)
     user_pets = Pet.objects.filter(owner=user)
-    if request.method == "GET":
-        tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
-        return render(request, "petclinic/index.html", {
-            "type_visit_options": TYPE_VISIT,
-            "tomorrow": tomorrow,
-            "pets": user_pets,
-            "time_visits": TIME_SLOT
-        })
+    tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+    return render(request, "petclinic/index.html", {
+        "type_visit_options": TYPE_VISIT,
+        "tomorrow": tomorrow,
+        "pets": user_pets,
+        "time_visits": TIME_SLOT
+    })
+
 
 
 def login_view(request):
@@ -330,12 +330,68 @@ def get_times_for_visit(request):
     # GET /get_times_for_visit?date=abc&type=other&pet=2
     # POST /get_times_for_visit + body {"type": "other", ...}
     
-    pass
+    user = User.objects.get(id=request.user.id)
+    pet_id = request.GET["pet"]
+    type_visit = request.GET["type_visit"]
+    date_visit = request.GET["date_visit"]
+    if not pet_id or not type_visit or not date_visit:
+        return JsonResponse({
+            "message": "Please fill all the fields!"
+        })
+    pet = Pet.objects.get(id=pet_id)
+    today = datetime.datetime.now()
+    if pet.owner.identical_number != user.identical_number:
+        return JsonResponse({
+            "message": "It is not your pet!"
+        })
+        
+    # The pet future visits
+    visits = Visit.objects.filter(pet=pet, type_visit=type_visit, date_visit__gte=today)
+    if len(visits) > 0:
+        return JsonResponse({
+            "message": f"Your {pet.pet_type.lower()} {pet.nickname} has an appoinment to {type_visit.lower()} on {visits[0].date_visit} at {visits[0].time_visit}!"
+        })
+    # All scheduled visits 
+    existing_visits = Visit.objects.filter(type_visit=type_visit, date_visit=date_visit).values("time_visit")
+    visits_list = [existing_visit for existing_visit in existing_visits]
+    return JsonResponse({
+        "busy_times": visits_list
+    })
     
-  
+     
 @login_required
 def save_visit(request): 
     
-    pass
+    user = User.objects.get(id=request.user.id)
+    pet_id = request.GET["pet"]
+    type_visit = request.GET["type_visit"]
+    date_visit = request.GET["date_visit"]
+    time_visit = request.GET["time_visit"]
+    if not pet_id or not type_visit or not date_visit or not time_visit:
+        return JsonResponse({
+            "message": "Please fill all the fields!"
+        })
+    pet = Pet.objects.get(id=pet_id)
+    if pet.owner.identical_number != user.identical_number:
+        return JsonResponse({
+            "message": "It is not your pet!"
+        })
+        
+    # Attempt to create new visit
+    try:
+        visit = Visit.objects.create(
+            date_visit = date_visit,
+            time_visit = time_visit,
+            type_visit = type_visit,
+            pet = pet
+        )
+        visit.save()
+    except IntegrityError:
+        return JsonResponse({
+            "message": "Something went wrong. Try again later."
+        })
+    return JsonResponse({
+            "message": f"An appoinment to {type_visit.lower()} for your {pet.pet_type.lower()} {pet.nickname} was scheduled on {visit.date_visit} at {visit.time_visit}!"
+        })
         
     
