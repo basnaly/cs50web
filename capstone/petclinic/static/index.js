@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 for (let i = 0; i < data.busy_times.length; i++) {
                     const time = data.busy_times[i].time_visit;
                     if (document.getElementById(`${time}`) !== null) {
-                        document.getElementById(`${time}`).disable = true;
+                        document.getElementById(`${time}`).disabled = true;
                     }
                 }   
             }

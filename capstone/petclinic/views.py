@@ -7,10 +7,11 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
+from django.db import models
 
 import datetime
 
-from .models import User, Pet, Insurance, Visit
+from .models import User, Pet, Insurance, Visit, Vaccination
 
 PET_ICONS = ['🦮', '🐕‍🦺', '🐶', '🐩', '🐈', '🐈‍⬛', '😼', '😾', '🐇', '🐰', '🐹', '🐁', '🐭', '🦜', '🐦‍⬛', '🦤']
 PET_TYPES = ['Dog', 'Cat', 'Rabbit', 'Hamster', 'Bird']
@@ -395,3 +396,25 @@ def save_visit(request):
         })
         
     
+@login_required
+def show_vaccinations(request):
+    user = User.objects.get(id=request.user.id)
+    user_pets = Pet.objects.filter(owner=user)
+    list_vaccinations = Vaccination.objects.filter(pet__in=user_pets)
+    
+    pets_without_vaccination = Pet.objects.filter(owner=user).annotate(
+        vaccination_count=models.Count('vaccinations'),
+    ).filter(vaccination_count=0)
+    
+    if len(user_pets) == 0:
+        return render(request, "petclinic/show_vaccinations.html", {
+            "message": "Please register you pet!"
+        })
+    if len(list_vaccinations) == 0:
+        return render(request, "petclinic/show_vaccinations.html", {
+            "message": "You didn't do any vaccination to your pet/s!"
+        })
+    return render(request, "petclinic/show_vaccinations.html", {
+            "list_vaccinations": list_vaccinations,
+            "pets_without_vaccination": pets_without_vaccination
+        })

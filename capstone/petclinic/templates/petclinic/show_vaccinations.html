@@ -1,0 +1,66 @@
+{% extends "petclinic/layout.html" %}
+
+{% block body %}
+
+    <div class="mt-4">
+
+        {% if message %}
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const message = document.querySelector('#message').innerHTML;
+                    setTimeout(() => {
+                        document.querySelector('#message').innerHTML = "";
+                        window.location.replace("{% url 'add_pet' %}");
+                    }, 3000)
+                });
+            </script>
+
+            <div class="ms-3 text-danger fs-5" id="message">{{ message }}</div>
+        {% endif %} 
+
+        <div class="container">
+
+            <table class="table table-striped">
+                <thead>
+                <tr class="fs-5">
+                    <th scope="col">Pet name</th>
+                    <th scope="col">Date of vaccination</th>
+                    <th scope="col">Type of vaccination</th>
+                    <th scope="col" class="text-danger">Next_vaccination</th>
+                </tr>
+                </thead>
+                <tbody>
+                
+                    {% for vaccination in list_vaccinations %}
+                        <tr>
+                            <td>{{ vaccination.pet.icon }} 
+                                <a href="{% url 'pet_profile' vaccination.pet.id %}">
+                                    <span class="fs-5 text-success">{{ vaccination.pet.nickname }}</span>
+                                </a>
+                            </td>
+                            <td>{{ vaccination.date_vaccination }}</td>
+                            <td>{{ vaccination.type_vaccination }}</td>
+                            <td class="text-danger">{{ vaccination.next_vaccination }}</td>
+                        </tr>
+                    {% endfor %}
+                
+                </tbody>
+            </table>
+
+            {% if pets_without_vaccination %}
+                <div >
+                    <div class="text-center fs-5 mb-3">You still havn't done vaccination for your following pets:</div>
+                    {% for pet in pets_without_vaccination %}
+                        <ul>
+                            <li>{{ pet.icon }} {{ pet.nickname }}</li>
+                        </ul>
+                    {% endfor%}
+                </div>
+            {% endif %}
+        </div>
+
+
+    </div>
+
+{% endblock %}
