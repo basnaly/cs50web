@@ -15,27 +15,29 @@
 
         <link href="{% static 'styles.css' %}" rel="stylesheet">
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
+        {% if user.is_authenticated %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
 
-                fetch("/pet_list")
-                .then(response => response.json())
-                .then(data => {
-                    const pets_list = data.pets;
+                    fetch("/pet_list")
+                    .then(response => response.json())
+                    .then(data => {
+                        const pets_list = data.pets;
 
-                    for (let i = 0; i < pets_list.length; i++) {
-                        const childElement = document.createElement('a');
-                        childElement.className = "dropdown-item";
-                        childElement.href = `/pet_profile/${pets_list[i].id}`
-                        document.querySelector('#pets-dropdown').append(childElement);
-                        childElement.innerHTML = pets_list[i].icon + "  " + pets_list[i].nickname;
-                    } 
+                        for (let i = 0; i < pets_list.length; i++) {
+                            const childElement = document.createElement('a');
+                            childElement.className = "dropdown-item";
+                            childElement.href = `/pet_profile/${pets_list[i].id}`
+                            document.querySelector('#pets-dropdown').append(childElement);
+                            childElement.innerHTML = pets_list[i].icon + "  " + pets_list[i].nickname;
+                        } 
+                    })
+                    .catch(error => {
+                        console.log('Error', error);
+                    })
                 })
-                .catch(error => {
-                    console.log('Error', error);
-                })
-            })
-        </script>
+            </script>
+        {% endif %}
 
     </head>
 
@@ -67,7 +69,17 @@
                     {% if user.is_authenticated %}
 
                         <li class="nav-item">
-                            <a class="nav-link {% if request.path == '/add_pet' %} active {% endif %}" href="{% url 'add_pet' %}">Register Pet</a>
+                            <a class="nav-link {% if request.path == '/add_pet' %} active {% endif %}" 
+                                href="{% url 'add_pet' %}">
+                                Register Pet
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/notification' %} active {% endif %}" 
+                                href="{% url 'notification' %}">
+                                Notification
+                            </a>
                         </li>
 
                         <div class="dropstart ms-auto">

@@ -22,4 +22,7 @@ urlpatterns = [
     path("save_visit", views.save_visit, name="save_visit"),
     
     path("show_vaccinations", views.show_vaccinations, name="show_vaccinations"),
+    
+    path("notification", views.notification, name="notification"),
+    path("cancel_visit/<str:name>", views.cancel_visit, name="cancel_visit"),
 ]

@@ -22,7 +22,10 @@ TIME_SLOT = ["9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "16:00", "16:30
 # Create your views here.
 
 def index(request):
-    user = User.objects.get(id=request.user.id)
+    if request.user.is_authenticated:
+        user = User.objects.get(id=request.user.id)
+    else:
+        user = None
     user_pets = Pet.objects.filter(owner=user)
     tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
     return render(request, "petclinic/index.html", {
@@ -126,7 +129,7 @@ def add_pet(request):
                 "today": datetime.datetime.now()
             })
         return render(request, "petclinic/add_pet.html", {
-            "message": f"{nickname} was added!",
+            "message": f"Your {pet_type} {icon} {nickname} was added!",
             "icons": PET_ICONS,
             "types": PET_TYPES,
             "pets": user_pets,
@@ -231,7 +234,8 @@ def pet_profile(request, name):
             "icons": PET_ICONS,
             "today": datetime.datetime.now()
         })
-        
+
+       
 @csrf_exempt        
 @login_required
 def delete_pet(request, name):
@@ -252,7 +256,7 @@ def delete_pet(request, name):
                 "message": "Something went wrong. Try again later."
             })
         return JsonResponse({
-            "message": f"{pet.nickname} was deleted!",
+            "message": f"Your {pet.pet_type} {pet.icon} {pet.nickname} was deleted!",
         })
         
         
@@ -361,8 +365,7 @@ def get_times_for_visit(request):
     
      
 @login_required
-def save_visit(request): 
-    
+def save_visit(request):     
     user = User.objects.get(id=request.user.id)
     pet_id = request.GET["pet"]
     type_visit = request.GET["type_visit"]
@@ -417,4 +420,40 @@ def show_vaccinations(request):
     return render(request, "petclinic/show_vaccinations.html", {
             "list_vaccinations": list_vaccinations,
             "pets_without_vaccination": pets_without_vaccination
+        })
+    
+    
+@login_required
+def notification(request):
+    user = User.objects.get(id=request.user.id)
+    # Get all visits of this user
+    user_pets = Pet.objects.filter(owner=user)
+    pets_visits = Visit.objects.filter(pet__in=user_pets)
+    print(pets_visits)
+    return render(request, "petclinic/notification.html", {
+        "pets_visits": pets_visits
+    })
+    
+
+@csrf_exempt
+@login_required
+def cancel_visit(request, name):
+    user = User.objects.get(id=request.user.id)
+    pets_user = Pet.objects.filter(owner=user)
+    try:
+        visit = Visit.objects.get(id=name)
+    except Visit.DoesNotExist:
+        raise Http404("It is not your pet!")
+    if visit.pet.owner.identical_number != user.identical_number:
+        raise Http404("It is not your pet!")
+    
+    if request.method == "DELETE":
+        try:
+            visit.delete()
+        except IntegrityError:
+            return JsonResponse({
+                "message": "Something went wrong. Try again later."
+            })
+        return JsonResponse({
+            "message": f"An appoinment for your {visit.pet.pet_type.lower()} {visit.pet.nickname} to {visit.type_visit.lower()}  on {visit.date_visit} at {visit.time_visit} was deleted!"
         })

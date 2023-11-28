@@ -18,8 +18,7 @@
                     document.querySelector('#pet-profile').append(messageElement);
                     document.querySelector('#delete-pet').innerHTML = data.message;
 
-                    setTimeout(() => {
-                        // document.querySelector('#delete-pet').innerHTML = "";  
+                    setTimeout(() => { 
                         document.querySelector('#pet-profile').innerHTML = "";
                         window.location.replace("{% url 'index' %}");
                     }, 3000)  
@@ -44,6 +43,7 @@
                 });
 
             </script>
+
             <div class="ms-3 text-danger fs-5" id="message">{{ message }}</div>
         {% endif %} 
 
@@ -104,7 +104,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-danger" onClick="deletePet('{{pet.id}}'); return false;" id="delete-pet">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onClick="deletePet('{{pet.id}}'); return false;" id="delete-pet">
                             Delete
                         </button>
                     </div>

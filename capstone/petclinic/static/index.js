@@ -1,15 +1,16 @@
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    document.querySelector('#time-slot').style.display = "none";
-    document.querySelector('#submit-visit').style.display = "none";
+    document.getElementById('time-slot').style.display = "none";
+    document.querySelector('#buttons').style.display = "none";
 
     document.querySelector('#show-times').onclick = function () {
 
         const pet = document.querySelector('#pet').value;
         const type_visit = document.querySelector('#type_visit').value;
         const date_visit = document.querySelector('#date_visit').value;
-
+        document.querySelector('#message').innerHTML = "";
+        
         fetch(`/get_times_for_visit?pet=${pet}&type_visit=${type_visit}&date_visit=${date_visit}`)
         .then(response => response.json())
         .then(data => {
@@ -23,11 +24,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (document.getElementById(`${time}`) !== null) {
                         document.getElementById(`${time}`).disabled = true;
                     }
-                }   
-            }
-            document.querySelector('#show-times').style.display = "none";    
-            document.querySelector('#time-slot').style.display = "block";  
-            document.querySelector('#submit-visit').style.display = "block";
+                } 
+                document.querySelector('#show-times').style.display = "none";    
+                document.querySelector('#time-slot').style.display = "block";  
+                document.querySelector('#buttons').style.display = "block";
+
+                document.querySelector('#pet').disabled = true;
+                document.querySelector('#type_visit').disabled = true;
+                document.querySelector('#date_visit').disabled = true;
+            }    
         })
         .catch(error => {
             console.log('Error', error)
@@ -56,5 +61,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Error', error)
         })
         return false;
+    }
+
+    document.querySelector('#reset-visit').onclick = function () {
+        window.location.replace("/");
     }
 });

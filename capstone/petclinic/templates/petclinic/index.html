@@ -2,13 +2,13 @@
 {% load static %}
 
 {% block body %}
-
-    {% block script %}
-        <script src="{% static '/index.js' %}"></script>
-    {% endblock %}
     
     <div class="mt-3">
         {% if user.is_authenticated %}
+
+            {% block script %}
+                <script src="{% static '/index.js' %}"></script>
+            {% endblock %}
 
             <div class="ms-3 mb-3 text-danger fs-5" id="message"></div>
 
@@ -63,9 +63,14 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-success mt-3" id="submit-visit">
-                        Submit my visit
-                    </button>
+                    <div id="buttons">
+                        <button class="btn btn-success mt-3 mx-3" id="submit-visit">
+                            Submit my visit
+                        </button>
+                        <button class="btn btn-danger mt-3 mx-3" id="reset-visit">
+                            Reset
+                        </button>
+                    </div>
             </form>
 
         {% else %}
