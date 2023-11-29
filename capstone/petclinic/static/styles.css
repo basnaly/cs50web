@@ -15,7 +15,15 @@ body::before {
     left: 0px;
     opacity: 0.1;
     z-index: -1;
+}
 
+.error-page {
+    background-color: white;
+}
+
+.image-error {
+    height: 100%;
+    max-height: calc(100vh - 154px);
 }
 
 .form-control:focus, .form-select:focus {

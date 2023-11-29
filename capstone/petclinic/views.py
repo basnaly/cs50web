@@ -36,7 +36,6 @@ def index(request):
     })
 
 
-
 def login_view(request):
     if request.method == "POST":
         
@@ -197,9 +196,13 @@ def pet_profile(request, name):
     try:
         pet = Pet.objects.get(id=name)
     except Pet.DoesNotExist:
-        raise Http404("It is not your pet!")
+        return render(request, "petclinic/404.html", {
+            "message": "It is not your pet!"
+        })
     if pet.owner.identical_number != owner.identical_number:
-        raise Http404("It is not your pet!")
+        return render(request, "petclinic/404.html", {
+            "message": "It is not your pet!"
+        })
          
     if request.method == "POST":
         icon = request.POST["icon"]
@@ -244,9 +247,13 @@ def delete_pet(request, name):
     try:
         pet = Pet.objects.get(id=name)
     except Pet.DoesNotExist:
-        raise Http404("It is not your pet!")
+        return render(request, "petclinic/404.html", {
+            "message": "It is not your pet!"
+        })
     if pet.owner.identical_number != owner.identical_number:
-        raise Http404("It is not your pet!")
+        return render(request, "petclinic/404.html", {
+            "message": "It is not your pet!"
+        })
     
     if request.method == "DELETE":
         try: 
@@ -276,9 +283,13 @@ def pet_insurance(request, name):
     try: 
         pet = Pet.objects.get(id=name)
     except Pet.DoesNotExist:
-        raise Http404("It is not your pet!")
+        return render(request, "petclinic/404.html", {
+            "message": "It is not your pet!"
+        })
     if pet.owner.identical_number != owner.identical_number:
-        raise Http404("It is not your pet!")
+        return render(request, "petclinic/404.html", {
+            "message": "It is not your pet!"
+        })
     
     if request.method == "GET":
         insurance = None
@@ -343,14 +354,22 @@ def get_times_for_visit(request):
         return JsonResponse({
             "message": "Please fill all the fields!"
         })
+    
+    converted_date = datetime.datetime.strptime(date_visit, '%Y-%m-%d')
+    weekno = converted_date.weekday()
+    if weekno > 4:
+        return JsonResponse({
+            "message": "We don't work on Saturday and Sunday. Please select week days!"
+        })
+        
     pet = Pet.objects.get(id=pet_id)
-    today = datetime.datetime.now()
     if pet.owner.identical_number != user.identical_number:
         return JsonResponse({
             "message": "It is not your pet!"
         })
         
     # The pet future visits
+    today = datetime.datetime.now()
     visits = Visit.objects.filter(pet=pet, type_visit=type_visit, date_visit__gte=today)
     if len(visits) > 0:
         return JsonResponse({
@@ -443,9 +462,13 @@ def cancel_visit(request, name):
     try:
         visit = Visit.objects.get(id=name)
     except Visit.DoesNotExist:
-        raise Http404("It is not your pet!")
+        return render(request, "petclinic/404.html", {
+            "message": "It is not your pet!"
+        })
     if visit.pet.owner.identical_number != user.identical_number:
-        raise Http404("It is not your pet!")
+        return render(request, "petclinic/404.html", {
+            "message": "It is not your pet!"
+        })
     
     if request.method == "DELETE":
         try:
@@ -457,3 +480,8 @@ def cancel_visit(request, name):
         return JsonResponse({
             "message": f"An appoinment for your {visit.pet.pet_type.lower()} {visit.pet.nickname} to {visit.type_visit.lower()}  on {visit.date_visit} at {visit.time_visit} was deleted!"
         })
+        
+        
+# custom 404 view
+def custom_404(request, name):
+    return render(request, 'petclinic/404.html', {"message":"The page does not exist!"}, status=404)

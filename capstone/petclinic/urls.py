@@ -25,4 +25,7 @@ urlpatterns = [
     
     path("notification", views.notification, name="notification"),
     path("cancel_visit/<str:name>", views.cancel_visit, name="cancel_visit"),
+    
+    path("<str:name>", views.custom_404, name="custom_404")
 ]
+

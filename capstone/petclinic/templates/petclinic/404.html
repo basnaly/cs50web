@@ -1,0 +1,14 @@
+{% extends "petclinic/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <div class="error-page d-flex flex-column align-items-center">
+        {% if message %}
+            <div class="text-center text-danger fs-3" id="message">{{ message }}</div>
+            <img src="{% static '/cat404.png' %}" class="image-error"/>
+        {% endif %} 
+    </div>
+
+
+{% endblock %}
