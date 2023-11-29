@@ -82,6 +82,10 @@ def register(request):
                 email = email, 
                 password = password
             )
+            if not user.is_valid_user():
+                return render(request, "petclinic/register.html", {
+                    "message": "Not valid user!"
+                })   
             user.save()
         except IntegrityError:
             return render(request, "petclinic/register.html", {
@@ -120,11 +124,20 @@ def add_pet(request):
                 details = details,
                 owner = user
             )
+            if not pet.is_valid_pet():
+                return render(request, "petclinic/add_pet.html", {
+                    "message": "It is not a valid pet!",
+                    "icons": PET_ICONS,
+                    "types": PET_TYPES,
+                    "pets": user_pets,
+                    "today": datetime.datetime.now()
+                })
             pet.save()
         except IntegrityError:
             return render(request, "petclinic/add_pet.html", {
                 "icons": PET_ICONS,
                 "types": PET_TYPES,
+                "pets": user_pets,
                 "today": datetime.datetime.now()
             })
         return render(request, "petclinic/add_pet.html", {
@@ -316,6 +329,14 @@ def pet_insurance(request, name):
                     owner = owner,
                     pet = pet
                 )
+                if not insurance.is_valid_insurance():
+                    return render(request, "petclinic/pet_insurance.html", {
+                        "message": "It is not valid insurance!",
+                        "pet": pet,
+                        "insurance": insurance,  
+                        "monthly_price": MONTHLY_PRICE[pet.pet_type],
+                        "today": datetime.datetime.now()
+                    })
                 insurance.save()
             else:
                 return render(request, "petclinic/pet_insurance.html", {
@@ -408,6 +429,10 @@ def save_visit(request):
             type_visit = type_visit,
             pet = pet
         )
+        if not visit.is_valid_visit():
+            return JsonResponse({
+            "message": "It is not a valid visit!"
+        })
         visit.save()
     except IntegrityError:
         return JsonResponse({

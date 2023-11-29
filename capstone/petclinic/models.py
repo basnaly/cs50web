@@ -10,6 +10,9 @@ class User(AbstractUser):
     def __str__(self):
         return f"{self.identical_number}, {self.first_name}, {self.last_name}, {self.phone_number}, {self.email}"
     
+    def is_valid_user(self):
+        return self.identical_number != 0 and self.first_name != "" and self.last_name != "" and self.phone_number != ""
+    
 
 class Pet(models.Model):
     icon = models.CharField(max_length=8, blank=True)
@@ -22,6 +25,9 @@ class Pet(models.Model):
     
     def __str__(self): 
         return f"{self.icon} {self.nickname} {self.birth_date} {self.pet_type} {self.details} {self.created} {self.owner}" 
+    
+    def is_valid_pet(self):
+        return self.nickname != "" and self.pet_type != ""
 
 class Insurance(models.Model):
     start_date = models.DateField()
@@ -32,6 +38,9 @@ class Insurance(models.Model):
     def __str__(self):
         return f"{self.start_date} {self.monthly_price} {self.owner} {self.pet}"
     
+    def is_valid_insurance(self):
+        return self.monthly_price > 0
+    
 class Visit(models.Model):
     date_visit = models.DateField()
     time_visit = models.CharField(max_length=64)
@@ -40,6 +49,9 @@ class Visit(models.Model):
     
     def __str__(self):
         return f"{self.date_visit} {self.time_visit} {self.type_visit} {self.pet}"
+    
+    def is_valid_visit(self):
+        return self.time_visit != "" and self.type_visit != ""
     
 class Vaccination(models.Model):
     date_vaccination = models.DateField()
@@ -52,4 +64,5 @@ class Vaccination(models.Model):
     def __str__(self):
         return f"{self.date_vaccination} {self.type_vaccination} {self.next_vaccination} {self.details} {self.vet} {self.pet}"
     
-    
+    def is_valid_vaccination(self):
+        return self.type_vaccination != "" and self.vet != ""
