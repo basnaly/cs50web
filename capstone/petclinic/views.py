@@ -303,7 +303,6 @@ def pet_insurance(request, name):
         return render(request, "petclinic/404.html", {
             "message": "It is not your pet!"
         })
-    
     if request.method == "GET":
         insurance = None
         try:
