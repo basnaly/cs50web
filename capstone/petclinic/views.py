@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
 from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse, HttpResponseServerError
 from django.shortcuts import render
 from django.urls import reverse
@@ -138,7 +139,16 @@ def add_pet(request):
                 "icons": PET_ICONS,
                 "types": PET_TYPES,
                 "pets": user_pets,
-                "today": datetime.datetime.now()
+                "today": datetime.datetime.now(),
+                "message": "Something went wrong. Try again later."
+            })
+        except ValidationError:
+            return render(request, "petclinic/add_pet.html", {
+                "icons": PET_ICONS,
+                "types": PET_TYPES,
+                "pets": user_pets,
+                "today": datetime.datetime.now(),
+                "message": "Please fill all the fields!"
             })
         return render(request, "petclinic/add_pet.html", {
             "message": f"Your {pet_type} {icon} {nickname} was added!",
@@ -393,7 +403,7 @@ def get_times_for_visit(request):
     visits = Visit.objects.filter(pet=pet, type_visit=type_visit, date_visit__gte=today)
     if len(visits) > 0:
         return JsonResponse({
-            "message": f"Your {pet.pet_type.lower()} {pet.nickname} has an appoinment to {type_visit.lower()} on {visits[0].date_visit} at {visits[0].time_visit}!"
+            "message": f"Your {pet.pet_type.lower()} {pet.nickname} has an appointment to {type_visit.lower()} on {visits[0].date_visit} at {visits[0].time_visit}!"
         })
     # All scheduled visits 
     existing_visits = Visit.objects.filter(type_visit=type_visit, date_visit=date_visit).values("time_visit")
@@ -438,7 +448,7 @@ def save_visit(request):
             "message": "Something went wrong. Try again later."
         })
     return JsonResponse({
-            "message": f"An appoinment to {type_visit.lower()} for your {pet.pet_type.lower()} {pet.nickname} was scheduled on {visit.date_visit} at {visit.time_visit}!"
+            "message": f"An appointment to {type_visit.lower()} for your {pet.pet_type.lower()} {pet.nickname} was scheduled on {visit.date_visit} at {visit.time_visit}!"
         })
         
     
@@ -502,7 +512,7 @@ def cancel_visit(request, name):
                 "message": "Something went wrong. Try again later."
             })
         return JsonResponse({
-            "message": f"An appoinment for your {visit.pet.pet_type.lower()} {visit.pet.nickname} to {visit.type_visit.lower()}  on {visit.date_visit} at {visit.time_visit} was deleted!"
+            "message": f"An appointment for your {visit.pet.pet_type.lower()} {visit.pet.nickname} to {visit.type_visit.lower()}  on {visit.date_visit} at {visit.time_visit} was deleted!"
         })
         
         

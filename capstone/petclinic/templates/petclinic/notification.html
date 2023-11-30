@@ -30,55 +30,63 @@
             }
         </script>
 
-        {% for visit in pets_visits %}
-            <div class="alert alert-dark d-flex align-items-center justify-content-evenly text-black" role="alert">
-                <div class="fs-6">
-                    Your <span class="text-success fs-5 me-1">{{ visit.pet.pet_type|lower }}</span> 
-                    <span class="fs-5 me-1">{{ visit.pet.icon }}</span>
-                    <span>
-                        <a href="{% url 'pet_profile' visit.pet.id %}" class="text-success fs-5 me-1">
-                            {{ visit.pet.nickname }}
-                        </a>
-                    </span>
-                    has an appoinment to 
-                    <span class="text-success fs-5 mx-1">{{ visit.type_visit|lower }}</span> on 
-                    <span class="text-success fs-5 mx-1">{{ visit.date_visit }}</span> at 
-                    <span class="text-success fs-5 ms-1">{{ visit.time_visit }}</span>.
-                </div>
-
-                <button type="button" class="btn btn-danger ms-4 btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ visit.id }}" id="cancel-visit">
-                    Cancel visit
-                </button>
+        {% if not pets_visits %}
+            <div class="text-center fs-5 my-3">
+                You don't have any appointments yet!
             </div>
 
-            <div class="modal fade" id="deleteModal-{{ visit.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Delete visit</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                    <div class="modal-body">
-                        <div>Are you shure you want to delete the visit to
-                            <span class="text-success fs-5 ms-1">{{ visit.type_visit|lower }}</span> for your
-                            <span class="text-success fs-5 ms-1">{{ visit.pet.pet_type|lower }}</span> 
-                            <span class="fs-5">{{ visit.pet.icon }}</span>
-                            <span class="text-success fs-5 me-1">{{ visit.pet.nickname }}</span>on 
-                            <span class="text-success fs-5 mx-1">{{ visit.date_visit }}</span> at 
-                            <span class="text-success fs-5 ms-1">{{ visit.time_visit }}</span>?
-                        </div>
+        {% else %}
+
+            {% for visit in pets_visits %}
+                <div class="alert alert-dark d-flex align-items-center justify-content-evenly text-black" role="alert">
+                    <div class="fs-6">
+                        Your <span class="text-success fs-5 me-1">{{ visit.pet.pet_type|lower }}</span> 
+                        <span class="fs-5 me-1">{{ visit.pet.icon }}</span>
+                        <span>
+                            <a href="{% url 'pet_profile' visit.pet.id %}" class="text-success fs-5 me-1">
+                                {{ visit.pet.nickname }}
+                            </a>
+                        </span>
+                        has an appointment to 
+                        <span class="text-success fs-5 mx-1">{{ visit.type_visit|lower }}</span> on 
+                        <span class="text-success fs-5 mx-1">{{ visit.date_visit }}</span> at 
+                        <span class="text-success fs-5 ms-1">{{ visit.time_visit }}</span>.
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onClick="cancelVisit('{{visit.id}}'); return false;" id="cancel-visit">
-                            Delete
-                        </button>
-                    </div>
-                  </div>
+
+                    <button type="button" class="btn btn-danger ms-4 btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ visit.id }}" id="cancel-visit">
+                        Cancel visit
+                    </button>
                 </div>
-            </div>
+
+                <div class="modal fade" id="deleteModal-{{ visit.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete visit</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                        <div class="modal-body">
+                            <div>Are you shure you want to delete the visit to
+                                <span class="text-success fs-5 ms-1">{{ visit.type_visit|lower }}</span> for your
+                                <span class="text-success fs-5 ms-1">{{ visit.pet.pet_type|lower }}</span> 
+                                <span class="fs-5">{{ visit.pet.icon }}</span>
+                                <span class="text-success fs-5 me-1">{{ visit.pet.nickname }}</span>on 
+                                <span class="text-success fs-5 mx-1">{{ visit.date_visit }}</span> at 
+                                <span class="text-success fs-5 ms-1">{{ visit.time_visit }}</span>?
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onClick="cancelVisit('{{visit.id}}'); return false;" id="cancel-visit">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
         
-        {% endfor%}
+            {% endfor%}
+        {% endif %}
     </div>
 
 {% endblock %}
