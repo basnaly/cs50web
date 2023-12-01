@@ -2,11 +2,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse, HttpResponseServerError
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 from django.db import models
 
