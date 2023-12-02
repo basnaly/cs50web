@@ -75,7 +75,8 @@ def register(request):
         # Attempt to create new user
         try:
             user = User.objects.create_user(
-                username = identical_number, 
+                username = identical_number,
+                identical_number = identical_number, 
                 first_name = first_name, 
                 last_name = last_name, 
                 phone_number = phone_number, 
@@ -353,11 +354,19 @@ def pet_insurance(request, name):
                     "monthly_price": MONTHLY_PRICE[pet.pet_type],
                     "today": datetime.datetime.now()
                 })
+        except ValidationError:
+            return render(request, "petclinic/pet_insurance.html", {
+                "message": "Please fill all the fields!",
+                "pet": pet,
+                "insurance": None,  
+                "monthly_price": MONTHLY_PRICE[pet.pet_type],
+                "today": datetime.datetime.now()
+            })
         except IntegrityError:
             return render(request, "petclinic/pet_insurance.html", {
                 "message": "Something went wrong. Try again later.",
                 "pet": pet,
-                "insurance": insurance,  
+                "insurance": None,  
                 "monthly_price": MONTHLY_PRICE[pet.pet_type],
                 "today": datetime.datetime.now()
             })
